@@ -149,7 +149,7 @@ textarea.fi{min-height:90px;resize:vertical}
   <h2 style="font-size:20px;margin-top:26px">Sinyal Trust</h2>
   <div class="tr" style="margin-top:12px"><p><i>🛡️</i>Transaksi aman dan data jelas</p><p><i>⚡</i>Proses cepat setelah pembayaran</p><p><i>🎧</i>Layanan admin setiap hari</p></div>
   <hr>
-  <div class="ft"><p>© 2026 Kartrid Store. Situs contoh, semua data hanya placeholder. <a href="#/admin" style="color:var(--pink)">Panel admin (demo)</a></p></div>
+  <div class="ft"><p>© 2026 Kartrid Store. Situs contoh, semua data hanya placeholder.</p></div>
  </section>
 </main>
 
@@ -164,16 +164,10 @@ textarea.fi{min-height:90px;resize:vertical}
 <main class="w view" id="v-produk" hidden>
  <section class="pn"><div class="pill">🛍️ PRODUK</div><h1 class="big">Semua produk.</h1><p class="sub">Pakai kolom cari di atas atau filter di bawah.</p><div id="pf"></div><div class="g2" id="pg"></div></section>
 </main>
-<main class="w view" id="v-admin" hidden>
- <section class="pn"><div class="pill">🔧 PANEL ADMIN (DEMO)</div><h1 class="big">Persetujuan laporan.</h1><p class="sub">Login demo di sisi browser, belum aman untuk dipakai sungguhan. Nanti dikunci lewat backend.</p>
- <div class="st"><div><b id="aW">0</b>Menunggu</div><div><b id="aO">0</b>Disetujui</div><div><b id="aT">0</b>Total</div></div></section>
- <section class="pn"><div id="al"></div></section><button class="ob" id="alo" style="width:100%;margin-top:14px">Keluar admin</button>
-</main>
 <main class="w view" id="v-layanan" hidden>
  <section class="pn"><div class="pill">💼 LAYANAN</div><h1 class="big">Layanan Kartrid.</h1><p class="sub">Pilih layanan, lalu pesan lewat WhatsApp admin.</p><div id="lv"></div></section>
  <section class="pn"><h2 style="font-size:22px">Rental Akun</h2><div class="g2" id="lr"></div></section>
 </main>
-<main class="w view" id="v-alogin" hidden></main>
 <main class="w view" id="v-masuk" hidden></main>
 
 <button class="chat" aria-label="Chat admin" onclick="window.open('https://wa.me/6280000000000','_blank')">💬</button>
@@ -187,8 +181,8 @@ textarea.fi{min-height:90px;resize:vertical}
    ISI DI SINI (cuma 2 baris ini yang perlu kamu ubah)
    Selama belum diisi, situs jalan di MODE DEMO (data hilang saat refresh)
    ===================================================== */
-const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";   // 1) Project URL, contoh: https://abcdxyz.supabase.co (tombol Copy di halaman utama project)
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";      // 2) Project Settings > API Keys > anon public (eyJ...) atau Publishable key (sb_publishable_...)
+const SUPABASE_URL="ISI_PROJECT_URL";   // 1) Project URL, contoh: https://abcdxyz.supabase.co (tombol Copy di halaman utama project)
+const SUPABASE_KEY="ISI_ANON_KEY";      // 2) Project Settings > API Keys > anon public (eyJ...) atau Publishable key (sb_publishable_...)
 /* JANGAN isi kunci service_role / secret di sini! */
 const LIVE=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
 const sb=LIVE?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
@@ -206,11 +200,12 @@ const F=[
  {g:"Tembak Rimba",t:"AKUN PRIBADI ADMIN",s:"Admin Kartrid",o:50000000,p:20000000,d:60,e:"💎",c:["#7B2FF7","#DB2777"]},
  {g:"Tembak Rimba",t:"STOK PRIBADI BUDI JABAR 2",s:"Budi Jabar",o:2000000,p:850000,d:57,e:"🔥",c:["#059669","#1E3A8A"]}];
 const R=[{t:"RENTAL TR 001",s:"Admin Kartrid",p:65000,e:"🎮",c:["#7B2FF7","#3B1B8F"]},{t:"RENTAL TR 004",s:"Admin Kartrid",p:50000,e:"🕹️",c:["#9333EA","#4C1D95"]}];
+if(LIVE){P.length=F.length=R.length=0}
 const PT=[{t:"TOKO SATU",s:"Admin Kartrid",e:"🤝",c:["#4F46E5","#7B2FF7"]},{t:"TOKO DUA",s:"Admin Kartrid",e:"🤝",c:["#6D28D9","#3B4DFF"]},{t:"TOKO TIGA",s:"Admin Kartrid",e:"🤝",c:["#5B21B6","#2563EB"]}];
 const bg=c=>`background:linear-gradient(135deg,${c[0]},${c[1]})`;
 const all=[];
 function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
- return `<button class="c" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}</div>
+ return `<button class="c" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}</div>
  <div class="ci"><span class="g">${k==="r"?"Rental":k==="t"?"Partner resmi":x.g}</span><span class="t">${x.t}</span><span class="sv">${x.s}</span>
  ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
 $("sl").innerHTML=slides.map(s=>`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
@@ -226,7 +221,7 @@ function fill(){const q=$("q").value.toLowerCase();
  document.querySelectorAll("#v-home .c[data-i]").forEach(b=>b.onclick=()=>{const x=all[+b.dataset.i];show({x,k:x.k})})}
 function show({x,k}){
  const msg=encodeURIComponent("Halo admin, saya mau tanya "+x.t);
- $("db").innerHTML=`<div class="dc" style="${bg(x.c)}">${x.e}</div><span class="g">${k==="r"?"Rental":x.g||"Partner resmi"}</span><h3 style="font-size:20px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>
+ $("db").innerHTML=`<div class="dc" style="${bg(x.c)};overflow:hidden">${x.img?`<img src="${esc(x.img)}" alt="" style="width:100%;height:100%;object-fit:cover">`:x.e}</div><span class="g">${k==="r"?"Rental":x.g||"Partner resmi"}</span><h3 style="font-size:20px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
  ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:24px">${rp(x.p)}</b></p>`:""}
  <a class="bt" target="_blank" rel="noopener" href="https://wa.me/6280000000000?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a><button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();$("dlg").showModal()}
@@ -284,7 +279,7 @@ $("rn").onclick=()=>{
  $("dlg").showModal()};
 $("rq").oninput=drawRep;$("rs").onclick=drawRep;$("rr").onclick=async()=>{await loadRep();drawRep()};
 // masuk & daftar (tampilan saja, belum ada backend)
-function authView(mode){const reg=mode==="daftar";
+function authView(mode){if(USER)return accountView();const reg=mode==="daftar";
  $("v-masuk").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">${reg?"➕ DAFTAR AKUN":"➜ MASUK AKUN"}</div>
  <h1 class="big" style="font-size:clamp(30px,9vw,44px)">${reg?"Buat akun baru.":"Masuk ke akun kamu."}</h1>
  <p class="sub">${reg?"Isi data di bawah untuk mendaftar.":"Gunakan email yang terdaftar."}</p>
@@ -300,8 +295,25 @@ function authView(mode){const reg=mode==="daftar";
   if(reg&&(!/^\S+@\S+\.\S+$/.test($("e").value)||$("pw").value.length<8))return m.textContent="Isi email yang benar dan password minimal 8 karakter.";
   if(!LIVE)return m.textContent="Mode demo: isi SUPABASE_URL dan SUPABASE_KEY di index.html dulu.";
   const em=reg?$("e").value.trim():$("u").value.trim();
-  const {error}=reg?await sb.auth.signUp({email:em,password:$("pw").value,options:{data:{username:$("u").value.trim()}}}):await sb.auth.signInWithPassword({email:em,password:$("pw").value});
-  m.textContent=error?"Gagal: "+error.message:reg?"Pendaftaran berhasil. Cek email jika diminta verifikasi, lalu masuk.":"Berhasil masuk."}}
+  const {data,error}=reg?await sb.auth.signUp({email:em,password:$("pw").value,options:{data:{username:$("u").value.trim()}}}):await sb.auth.signInWithPassword({email:em,password:$("pw").value});
+  if(error)return m.textContent="Gagal: "+error.message;
+  if(reg)return m.textContent="Pendaftaran berhasil. Cek email jika diminta verifikasi, lalu masuk.";
+  USER=data.user;route()}}
+// halaman akun setelah login
+let USER=null;
+function accountView(){
+ $("v-masuk").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">👤 AKUN SAYA</div><h1 class="big" style="font-size:clamp(28px,8vw,40px)">Halo!</h1><p class="sub">Masuk sebagai <b>${esc(USER.email)}</b>.</p>
+ <div style="display:grid;gap:10px;margin-top:18px"><a class="ob" style="text-align:center" href="#/laporan">Lihat laporan</a><button class="ob" id="lo">Keluar</button></div></section>`;
+ $("lo").onclick=async()=>{if(LIVE)await sb.auth.signOut();USER=null;route()}}
+// ambil produk dari Supabase (diisi lewat admin.html)
+async function loadProducts(){if(!LIVE)return;
+ const {data,error}=await sb.from("products").select("*").eq("active",true).order("id",{ascending:false});
+ if(error||!data)return;
+ const pal=[["#3B4DFF","#7B2FF7"],["#FF5C7A","#7B2FF7"],["#2FBF71","#0B6E4F"],["#F97316","#B91C1C"],["#0EA5E9","#3B4DFF"]];
+ P.length=F.length=R.length=0;
+ data.forEach(d=>{const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:"🎮",c:pal[d.id%pal.length],img:d.image_url||"",desc:esc(d.description||"")};
+  (d.category==="f"?F:d.category==="r"?R:P).push(x)});
+ buildCat();fill();route()}
 // ambil laporan dari Supabase (mode LIVE)
 async function loadRep(){if(!LIVE)return;
  const {data,error}=await sb.from("reports").select("*").order("id",{ascending:false});
@@ -309,9 +321,9 @@ async function loadRep(){if(!LIVE)return;
  data.forEach(d=>REP.push({id:d.id,t:d.title,wa:d.wa,gid:d.game_id||"",k:d.story||"",at:new Date(d.created_at).toLocaleString("id-ID"),s:d.status}))}
 async function initAdmin(){if(!LIVE)return;
  const {data}=await sb.auth.getSession();
- if(data.session){const r=await sb.from("admins").select("user_id").maybeSingle();ADM=!!r.data;route()}}
+ if(data.session){USER=data.session.user;route()}}
 // halaman produk
-const CAT=[...P.map(x=>[x,"p"]),...F.map(x=>[x,"f"]),...R.map(x=>[x,"r"])];
+const CAT=[];function buildCat(){CAT.length=0;CAT.push(...P.map(x=>[x,"p"]),...F.map(x=>[x,"f"]),...R.map(x=>[x,"r"]))}buildCat();
 const KL={"Semua":"","Stok Akun":"p","Flash Sale":"f","Rental":"r"},PS={k:"Semua",g:"Semua",s:"def"};
 function drawProduk(){
  const q=$("q").value.trim().toLowerCase(),games=["Semua",...new Set([...P,...F].map(x=>x.g))];
@@ -323,15 +335,6 @@ function drawProduk(){
  if(PS.s!=="def")l.sort((a,b)=>PS.s==="low"?a[0].p-b[0].p:b[0].p-a[0].p);
  $("pg").innerHTML=l.length?l.map(([x,k])=>card(x,k)).join(""):`<p class="sub" style="grid-column:1/-1">Tidak ada produk yang cocok. Coba ganti kata kunci atau filter.</p>`;
  $("pg").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>{const x=all[+b.dataset.i];show({x,k:x.k})})}
-// panel admin (demo)
-function drawAdmin(){
- const w=REP.filter(r=>r.s==="wait").length;
- $("aW").textContent=w;$("aO").textContent=REP.length-w;$("aT").textContent=REP.length;
- $("al").innerHTML=[...REP].sort((a,b)=>(a.s==="wait"?0:1)-(b.s==="wait"?0:1)||b.id-a.id).map(r=>`<div class="rp" style="flex-direction:column;margin:0 0 12px"><div>${badge(r)}<div style="font-weight:800;font-size:17px;margin-top:6px"><span style="color:var(--pink)">#${r.id}</span> ${esc(r.t)}</div><div class="wa">No WA Pelaku: <b>${r.wa}</b>${r.gid?` • ID Game: <b>${esc(r.gid)}</b>`:""}</div>${r.k?`<p class="sub" style="margin:0 0 6px">${esc(r.k)}</p>`:""}<div class="tm">🕒 ${r.at}</div></div><div class="two" style="margin:0">${r.s==="wait"?`<button class="pb" data-a="ok" data-id="${r.id}">Setujui</button><button class="ob" data-a="del" data-id="${r.id}">Tolak</button>`:`<button class="ob" data-a="del" data-id="${r.id}" style="grid-column:1/-1">Hapus laporan</button>`}</div></div>`).join("")||`<p class="sub">Belum ada laporan.</p>`;
- $("al").querySelectorAll("button").forEach(b=>b.onclick=()=>{const id=+b.dataset.id;
-  if(LIVE){const q=b.dataset.a==="ok"?sb.from("reports").update({status:"ok"}).eq("id",id):sb.from("reports").delete().eq("id",id);
-   q.then(async({error})=>{if(error)alert("Gagal: "+error.message);await loadRep();drawAdmin()});return}
-  if(b.dataset.a==="ok")REP.find(r=>r.id===id).s="ok";else REP.splice(REP.findIndex(r=>r.id===id),1);drawAdmin()})}
 // halaman layanan
 const SV=[
  {e:"⚡",t:"Top Up All Game",d:"Diamond, voucher, dan koin. Proses cepat setelah bayar.",c:["#C21E8C","#4A1BA8"]},
@@ -341,35 +344,19 @@ function drawLayanan(){
  $("lv").innerHTML=SV.map(x=>`<div class="rp" style="align-items:center"><div class="scam" style="${bg(x.c)};font-size:34px" aria-hidden="true">${x.e}</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:17px">${esc(x.t)}</div><p class="sub" style="font-size:13px;margin:2px 0 8px">${esc(x.d)}</p><a class="chip" style="display:inline-block;background:var(--pink);border-color:var(--pink);color:#fff" ${x.h?`href="${x.h}"`:`href="https://wa.me/6280000000000?text=${encodeURIComponent("Halo admin, saya mau pesan "+x.t)}" target="_blank" rel="noopener"`}>${x.h?"Buka":"Pesan via WA"}</a></div></div>`).join("");
  $("lr").innerHTML=R.map(x=>card(x,"r")).join("");
  $("lr").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>{const x=all[+b.dataset.i];show({x,k:x.k})})}
-// login admin (demo: hanya penghalang, kode di browser tetap bisa dibaca orang)
-let ADM=false;const ADMU="farrel",ADMH="6007b590ec9ec2639be31097728a765187d96774a2a92e2885d56eb0876d4c31";
-async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
-function adminLogin(){
- $("v-alogin").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">🔧 LOGIN ADMIN</div><h1 class="big" style="font-size:clamp(30px,9vw,44px)">Masuk sebagai admin.</h1><p class="sub">Khusus pengelola toko.</p>
- <form id="lf" novalidate><label class="fl" for="lu">${LIVE?"Email":"Username"}</label><input class="fi" id="lu" autocomplete="username" placeholder="${LIVE?"email admin":"username admin"}">
- <label class="fl" for="lp">Password</label><input class="fi" id="lp" type="password" autocomplete="current-password" placeholder="Password admin">
- <button class="pb" style="width:100%;margin-top:20px" type="submit">Masuk</button></form><p class="msg" id="lm" role="status"></p></section>`;
- $("lf").onsubmit=async e=>{e.preventDefault();
-  if(!window.crypto||!crypto.subtle)return $("lm").textContent="Browser ini belum mendukung login demo (butuh https).";
-  let ok=false;
-  if(LIVE){const {error}=await sb.auth.signInWithPassword({email:$("lu").value.trim(),password:$("lp").value});
-   if(!error){const {data}=await sb.from("admins").select("user_id").maybeSingle();ok=!!data;if(!ok){await sb.auth.signOut();return $("lm").textContent="Akun ini bukan admin."}}}
-  else ok=$("lu").value.trim()===ADMU&&await sha("kartrid:"+$("lp").value)===ADMH;
-  if(ok){ADM=true;route()}else $("lm").textContent="Username atau password salah."}}
-$("alo").onclick=()=>{ADM=false;if(LIVE)sb.auth.signOut();location.hash="#/"};
 // router sederhana (hash) agar jalan di GitHub Pages
-const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),masuk:$("v-masuk"),admin:$("v-admin"),alogin:$("v-alogin"),layanan:$("v-layanan")};
+const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),masuk:$("v-masuk"),layanan:$("v-layanan")};
 function route(){const h=location.hash;
- let r=h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/admin")?"admin":h.startsWith("#/laporan")?"laporan":(h.startsWith("#/masuk")||h.startsWith("#/daftar"))?"masuk":"home";
- if(r==="admin"&&!ADM)r="alogin";Object.entries(views).forEach(([k,v])=>v.hidden=k!==r);
+ let r=h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":(h.startsWith("#/masuk")||h.startsWith("#/daftar"))?"masuk":"home";
+ Object.entries(views).forEach(([k,v])=>v.hidden=k!==r);
  const t=$("tick");if(t)t.hidden=r!=="home";
  if(r==="masuk")authView(h.startsWith("#/daftar")?"daftar":"masuk");
- if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="admin"){drawAdmin();loadRep().then(drawAdmin)}if(r==="alogin")adminLogin();if(r==="layanan")drawLayanan();
+ if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="layanan")drawLayanan();
  const k=r==="laporan"?3:r==="masuk"?4:r==="produk"?1:r==="layanan"?2:0;
  document.querySelectorAll(".bn a").forEach((a,i)=>a.classList.toggle("on",i===k));
  const id=h.startsWith("#/")?"":h.slice(1),el=id&&$(id);
  if(el&&r==="home")el.scrollIntoView();else if(!id)window.scrollTo(0,0)}
-if(LIVE)REP.length=0;addEventListener("hashchange",route);route();initAdmin();
+if(LIVE)REP.length=0;addEventListener("hashchange",route);route();initAdmin();loadProducts();
 
 </script>
 </body>
