@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin Kartrid</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--bg:#0A0E3A;--card:#10165A;--card2:#1A1F6E;--ink:#F2F3FF;--mute:#A9ADD8;--line:#2B3182;--pink:#FF4F9A;--ok:#2FD27A;--wt:#F59E0B;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h3{margin:0 0 6px}button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.w{max-width:720px;margin:0 auto;padding:14px}
+.pn{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:20px}
+.mu{color:var(--mute)}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:10px}.hd b{font-size:20px}
+.chips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card2);border-radius:999px;padding:7px 16px;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff}
+.fl{display:block;font-weight:700;margin:14px 0 6px}
+.fi{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;padding:12px}
+.fi:focus{outline:0;border-color:var(--pink)}
+textarea.fi{min-height:90px;resize:vertical}
+.pb{border:0;border-radius:999px;background:var(--pink);color:#fff;font-weight:800;padding:12px 18px}
+.ob{border:1px solid var(--line);border-radius:999px;background:none;font-weight:700;padding:10px 16px}
+.pb:disabled{opacity:.6}
+.it{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;margin-top:10px}
+.th{flex:none;width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--card2);display:grid;place-items:center;font-size:28px}
+.in{flex:1;min-width:0;display:flex;flex-direction:column}.in b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr{color:var(--ok);font-weight:800}.pr s{color:var(--mute);font-weight:500}
+.ac{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;border:1px solid}
+.tag.ok{color:var(--ok)}.tag.wt{color:var(--wt)}
+.msg{color:var(--mute);font-size:13px;min-height:20px;margin:10px 0 0}
+.pv{display:block;width:100%;max-height:160px;object-fit:cover;border-radius:12px;margin-bottom:8px}
+.ck{display:flex;gap:8px;align-items:center;margin:14px 0}
+dialog{border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink);padding:0;width:min(460px,calc(100vw - 20px));max-height:calc(100dvh - 20px)}
+dialog::backdrop{background:#050825c0}
+.db{padding:18px;display:grid;gap:4px}.db .ob{margin-top:6px}
+</style>
+</head>
+<body>
+<div class="w" id="app"></div>
+<dialog id="dlg"><div class="db" id="db"></div></dialog>
+<script>
+/* =====================================================
+   ISI DI SINI: samakan persis dengan yang di index.html
+   ===================================================== */
+const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";
+/* jangan pernah isi kunci service_role / secret */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
+const CATN={p:"Stok Akun",f:"Flash Sale",r:"Rental"};
+let tab="produk",PR=[],RE=[];
+const ready=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
+const sb=ready?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+const say=h=>{$("app").innerHTML=h};
+
+function loginView(msg=""){
+ say(`<section class="pn"><h1>Admin Kartrid</h1><p class="mu">Masuk dengan akun admin Supabase.</p>
+ <form id="lf"><label class="fl" for="em">Email</label><input class="fi" id="em" type="email" autocomplete="username">
+ <label class="fl" for="pw">Password</label><input class="fi" id="pw" type="password" autocomplete="current-password">
+ <button class="pb" style="width:100%;margin-top:18px">Masuk</button></form><p class="msg" id="lm" role="status">${esc(msg)}</p></section>`);
+ $("lf").onsubmit=async e=>{e.preventDefault();$("lm").textContent="Memeriksa…";
+  const {error}=await sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
+  if(error)return $("lm").textContent="Gagal masuk: "+error.message;
+  gate()}}
+async function gate(){
+ const {data}=await sb.from("admins").select("user_id").maybeSingle();
+ if(!data){await sb.auth.signOut();return loginView("Akun ini bukan admin.")}
+ await load();panel()}
+async function load(){
+ const [a,b]=await Promise.all([sb.from("products").select("*").order("id",{ascending:false}),sb.from("reports").select("*").order("id",{ascending:false})]);
+ PR=a.data||[];RE=b.data||[]}
+
+function panel(){
+ const nw=RE.filter(r=>r.status==="wait").length;
+ say(`<div class="hd"><b>Admin Kartrid</b><button class="ob" id="out">Keluar</button></div>
+ <div class="chips"><button class="chip" data-t="produk" aria-pressed="${tab==="produk"}">Produk (${PR.length})</button><button class="chip" data-t="laporan" aria-pressed="${tab==="laporan"}">Laporan (${nw} baru)</button></div><div id="body"></div>`);
+ $("out").onclick=async()=>{await sb.auth.signOut();loginView()};
+ document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{tab=b.dataset.t;panel()});
+ tab==="produk"?prodView():repView()}
+
+function prodView(){
+ $("body").innerHTML=`<button class="pb" id="add" style="width:100%;margin:14px 0 4px">+ Tambah produk</button>`+
+ (PR.map(p=>`<div class="it">${p.image_url?`<img class="th" src="${esc(p.image_url)}" alt="">`:`<div class="th" aria-hidden="true">🎮</div>`}
+  <div class="in"><b>${esc(p.title)}</b><span class="mu">${CATN[p.category]||""} • ${esc(p.game||"-")}${p.active?"":" • DISEMBUNYIKAN"}</span><span class="pr">${rp(p.price)}${p.old_price?` <s>${rp(p.old_price)}</s>`:""}</span></div>
+  <div class="ac"><button class="ob" data-e="${p.id}">Edit</button><button class="ob" data-d="${p.id}">Hapus</button></div></div>`).join("")||`<p class="mu">Belum ada produk. Tekan Tambah produk.</p>`);
+ $("add").onclick=()=>form();
+ $("body").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>form(PR.find(p=>p.id==b.dataset.e)));
+ $("body").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
+  if(!confirm("Hapus produk ini?"))return;
+  const {error}=await sb.from("products").delete().eq("id",b.dataset.d);
+  if(error)return alert("Gagal: "+error.message);await load();panel()})}
+
+function shrink(f){return new Promise((ok,no)=>{const im=new Image();
+ im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(ok,"image/jpeg",.82)};
+ im.onerror=()=>no(new Error("File bukan gambar"));im.src=URL.createObjectURL(f)})}
+
+function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
+ $("db").innerHTML=`<h3>${p.id?"Edit":"Tambah"} produk</h3>
+ <label class="fl" for="f_t">Judul</label><input class="fi" id="f_t" maxlength="80" value="${v("title")}">
+ <label class="fl" for="f_g">Game</label><input class="fi" id="f_g" maxlength="40" value="${v("game")}">
+ <label class="fl" for="f_c">Kategori</label><select class="fi" id="f_c">${Object.entries(CATN).map(([k,n])=>`<option value="${k}"${p.category===k?" selected":""}>${n}</option>`).join("")}</select>
+ <label class="fl" for="f_s">Penjual</label><input class="fi" id="f_s" maxlength="40" value="${v("seller")}">
+ <label class="fl" for="f_p">Harga (Rp)</label><input class="fi" id="f_p" type="number" min="0" inputmode="numeric" value="${v("price")}">
+ <label class="fl" for="f_o">Harga coret (opsional)</label><input class="fi" id="f_o" type="number" min="0" inputmode="numeric" value="${v("old_price")}">
+ <label class="fl" for="f_d">Deskripsi</label><textarea class="fi" id="f_d" maxlength="600">${v("description")}</textarea>
+ <label class="fl" for="f_i">Foto</label>${p.image_url?`<img class="pv" src="${esc(p.image_url)}" alt="">`:""}<input class="fi" id="f_i" type="file" accept="image/*">
+ <label class="ck"><input type="checkbox" id="f_a"${p.active?" checked":""}> Tampilkan di toko</label>
+ <p class="msg" id="fm" role="status"></p><button class="pb" id="sv">Simpan</button><button class="ob" id="cx">Batal</button>`;
+ $("cx").onclick=()=>$("dlg").close();
+ $("sv").onclick=async()=>{const fm=$("fm"),t=$("f_t").value.trim(),pr=parseInt($("f_p").value,10);
+  if(!t||isNaN(pr)||pr<0)return fm.textContent="Judul dan harga wajib diisi.";
+  $("sv").disabled=true;fm.textContent="Menyimpan…";let url=p.image_url||null;const f=$("f_i").files[0];
+  try{
+   if(f){const blob=await shrink(f),path=`p-${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+    const up=await sb.storage.from("produk").upload(path,blob,{contentType:"image/jpeg"});if(up.error)throw up.error;
+    url=sb.storage.from("produk").getPublicUrl(path).data.publicUrl}
+   const row={title:t,game:$("f_g").value.trim()||null,category:$("f_c").value,seller:$("f_s").value.trim()||null,price:pr,
+    old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,image_url:url,active:$("f_a").checked};
+   const r=p.id?await sb.from("products").update(row).eq("id",p.id):await sb.from("products").insert(row);if(r.error)throw r.error;
+   $("dlg").close();await load();panel()
+  }catch(e){fm.textContent="Gagal: "+e.message;$("sv").disabled=false}};
+ $("dlg").showModal()}
+
+function repView(){
+ $("body").innerHTML=RE.map(r=>`<div class="it" style="flex-direction:column;align-items:stretch">
+  <div><span class="tag ${r.status==="ok"?"ok":"wt"}">${r.status==="ok"?"DISETUJUI":"MENUNGGU"}</span> <b>#${r.id} ${esc(r.title)}</b></div>
+  <div class="mu">WA: ${esc(r.wa)}${r.game_id?" • ID game: "+esc(r.game_id):""}</div>${r.story?`<p class="mu" style="margin:4px 0">${esc(r.story)}</p>`:""}
+  <div class="ac" style="margin-top:6px">${r.status==="wait"?`<button class="pb" data-a="ok" data-id="${r.id}">Setujui</button>`:""}<button class="ob" data-a="del" data-id="${r.id}">Hapus</button></div></div>`).join("")||`<p class="mu" style="margin-top:14px">Belum ada laporan.</p>`;
+ $("body").querySelectorAll("[data-a]").forEach(b=>b.onclick=async()=>{const id=b.dataset.id;
+  const q=b.dataset.a==="ok"?sb.from("reports").update({status:"ok"}).eq("id",id):sb.from("reports").delete().eq("id",id);
+  const {error}=await q;if(error)return alert("Gagal: "+error.message);await load();panel()})}
+
+if(!ready)say(`<section class="pn"><h1>Belum tersambung</h1><p class="mu">Isi SUPABASE_URL dan SUPABASE_KEY di bagian atas admin.html.</p></section>`);
+else sb.auth.getSession().then(({data})=>data.session?gate():loginView());
+</script>
+</body>
+</html>
