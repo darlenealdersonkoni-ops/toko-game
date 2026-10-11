@@ -71,8 +71,9 @@ function loginView(msg=""){
   if(error)return $("lm").textContent="Gagal masuk: "+error.message;
   gate()}}
 async function gate(){
- const {data}=await sb.from("admins").select("user_id").maybeSingle();
- if(!data){await sb.auth.signOut();return loginView("Akun ini bukan admin.")}
+ const {data:u}=await sb.auth.getUser();const uid=u&&u.user?u.user.id:"";
+ const {data,error}=await sb.from("admins").select("user_id").eq("user_id",uid).limit(1);
+ if(error||!data||!data.length){await sb.auth.signOut();return loginView(error?"Gagal cek admin: "+error.message:"Akun ini bukan admin (UID: "+uid+")")}
  await load();panel()}
 async function load(){
  const [a,b]=await Promise.all([sb.from("products").select("*").order("id",{ascending:false}),sb.from("reports").select("*").order("id",{ascending:false})]);
