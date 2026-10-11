@@ -181,8 +181,8 @@ textarea.fi{min-height:90px;resize:vertical}
    ISI DI SINI (cuma 2 baris ini yang perlu kamu ubah)
    Selama belum diisi, situs jalan di MODE DEMO (data hilang saat refresh)
    ===================================================== */
-const SUPABASE_URL="ISI_PROJECT_URL";   // 1) Project URL, contoh: https://abcdxyz.supabase.co (tombol Copy di halaman utama project)
-const SUPABASE_KEY="ISI_ANON_KEY";      // 2) Project Settings > API Keys > anon public (eyJ...) atau Publishable key (sb_publishable_...)
+const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";   // 1) Project URL, contoh: https://abcdxyz.supabase.co (tombol Copy di halaman utama project)
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";      // 2) Project Settings > API Keys > anon public (eyJ...) atau Publishable key (sb_publishable_...)
 /* JANGAN isi kunci service_role / secret di sini! */
 const LIVE=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
 const sb=LIVE?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
