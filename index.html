@@ -74,7 +74,7 @@ a{color:inherit;text-decoration:none}
 hr{border:0;border-top:1px solid var(--line);margin:26px 0 18px}
 .ft{text-align:center;color:var(--mute);font-size:13px;display:grid;gap:8px}
 .bn{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.bn div{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.bn div{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
 .bn a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;font-size:12px;font-weight:700;color:var(--mute)}
 .bn a span{width:52px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px}
 .bn a.on{color:var(--acc)}.bn a.on span{background:var(--fill)}
@@ -193,11 +193,10 @@ textarea.fi{min-height:90px;resize:vertical}
  <section class="pn"><div class="pill">💼 Layanan</div><h1 class="big">Layanan Satria Store.</h1><p class="sub">Pilih layanan, lalu pesan lewat WhatsApp admin.</p><div id="lv"></div></section>
  <section class="pn"><h2 style="font-size:22px">Rental akun</h2><div class="g2" id="lr"></div></section>
 </main>
-<main class="w view" id="v-masuk" hidden></main>
 
 <button class="chat" aria-label="Chat admin lewat WhatsApp" onclick="window.open('https://wa.me/6285151949632','_blank','noopener')">💬</button>
 <nav class="bn" aria-label="Menu utama"><div>
- <a href="#/" class="on"><span>🏠</span>Home</a><a href="#/produk"><span>🛍️</span>Produk</a><a href="#/layanan"><span>💼</span>Layanan</a><a href="#/laporan"><span>🛡️</span>Laporan</a><a href="#/masuk"><span>👤</span>Akun</a>
+ <a href="#/" class="on"><span>🏠</span>Home</a><a href="#/produk"><span>🛍️</span>Produk</a><a href="#/layanan"><span>💼</span>Layanan</a><a href="#/laporan"><span>🛡️</span>Laporan</a>
 </div></nav>
 <dialog id="dlg"><div class="db" id="db"></div></dialog>
 
@@ -217,7 +216,6 @@ const nm=s=>{s=s.replace(/\D/g,"");return s.startsWith("0")?"62"+s.slice(1):s};
 const wlist=s=>[...new Set(String(s).split(/[,;\n]+/).map(nm).filter(x=>x.length>=10))];
 const ilist=s=>[...new Set(String(s).split(/[\s,;]+/).map(x=>x.replace(/\D/g,"")).filter(Boolean))];
 const fmt=s=>String(s||"").split(",").filter(Boolean).map(esc).join(", ");
-let USER=null;
 const bg=c=>`background:linear-gradient(115deg,${c[0]} 0 58%,${c[1]} 58% 100%)`;
 const slides=[
  {h:"Top up game cepat dan murah",p:"Semua metode bayar: QRIS, e-wallet, bank.",c:["#16306B","#1F4BA3"]},
@@ -369,31 +367,6 @@ $("rn").onclick=()=>{
   $("db").innerHTML=`<h3 style="font-size:21px">Laporan terkirim</h3><p class="sub">Laporan dan foto bukti kamu masuk antrean. Laporan dan foto tampil di daftar publik setelah disetujui admin.</p><button class="bt al" id="cl2">Tutup</button>`;$("cl2").onclick=()=>$("dlg").close();drawRep()};
  $("dlg").showModal()};
 $("rq").oninput=drawRep;$("rs").onclick=drawRep;$("rr").onclick=async()=>{await loadRep();drawRep()};
-// masuk & daftar
-function authView(mode){if(USER)return accountView();const reg=mode==="daftar";
- $("v-masuk").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">${reg?"➕ Daftar akun":"➜ Masuk akun"}</div>
- <h1 class="big" style="font-size:clamp(30px,9vw,44px)">${reg?"Buat akun baru.":"Masuk ke akun kamu."}</h1>
- <p class="sub">${reg?"Isi data di bawah untuk mendaftar.":"Gunakan email yang terdaftar."}</p>
- <form id="af" novalidate>
- <label class="fl" for="u">${reg?"Username":"Email"}</label><input class="fi" id="u" autocomplete="username" placeholder="${reg?"username":"email kamu"}">
- ${reg?`<label class="fl" for="e">Email</label><input class="fi" id="e" type="email" autocomplete="email" placeholder="email kamu">`:""}
- <label class="fl" for="pw">Password</label><input class="fi" id="pw" type="password" autocomplete="${reg?"new-password":"current-password"}" placeholder="${reg?"Minimal 8 karakter":"Password kamu"}">
- <button class="pb" style="width:100%;margin-top:20px" type="submit">${reg?"Daftar":"Masuk"}</button></form>
- <p class="msg" id="am" role="status"></p>
- <p style="text-align:center;margin-top:8px">${reg?`Sudah punya akun? <a href="#/masuk" style="color:var(--acc);font-weight:800">Masuk</a>`:`Belum punya akun? <a href="#/daftar" style="color:var(--acc);font-weight:800">Daftar di sini</a>`}</p></section>`;
- $("af").onsubmit=async e=>{e.preventDefault();const m=$("am");
-  if(!$("u").value.trim()||!$("pw").value)return m.textContent="Isi username dan password dulu.";
-  if(reg&&(!/^\S+@\S+\.\S+$/.test($("e").value)||$("pw").value.length<8))return m.textContent="Isi email yang benar dan password minimal 8 karakter.";
-  if(!LIVE)return m.textContent="Mode demo: isi SUPABASE_URL dan SUPABASE_KEY di index.html dulu.";
-  const em=reg?$("e").value.trim():$("u").value.trim();
-  const {data,error}=reg?await sb.auth.signUp({email:em,password:$("pw").value,options:{data:{username:$("u").value.trim()}}}):await sb.auth.signInWithPassword({email:em,password:$("pw").value});
-  if(error)return m.textContent="Gagal: "+error.message;
-  if(reg)return m.textContent="Pendaftaran berhasil. Cek email jika diminta verifikasi, lalu masuk.";
-  USER=data.user;route()}}
-function accountView(){
- $("v-masuk").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">👤 Akun saya</div><h1 class="big" style="font-size:clamp(28px,8vw,40px)">Halo!</h1><p class="sub">Masuk sebagai <b>${esc(USER.email)}</b>.</p>
- <div style="display:grid;gap:10px;margin-top:18px"><a class="ob" style="text-align:center" href="#/laporan">Lihat laporan</a><button class="ob" id="lo">Keluar</button></div></section>`;
- $("lo").onclick=async()=>{if(LIVE)await sb.auth.signOut();USER=null;route()}}
 // ambil produk dari Supabase (diisi lewat admin.html)
 // kategori di tabel products: p=stok akun, f=flash sale, r=rental, n=nokos, t=partner
 async function loadProducts(){if(!LIVE)return;
@@ -414,9 +387,6 @@ async function loadRep(){if(!LIVE)return;
  const {data,error}=await sb.from("reports").select("id,title,wa,game_id,story,created_at,status,proof_paths").order("id",{ascending:false});
  if(error)return;REP.length=0;
  data.forEach(d=>REP.push({id:d.id,t:d.title,wa:d.wa,gid:d.game_id||"",k:d.story||"",at:new Date(d.created_at).toLocaleString("id-ID"),s:d.status,proofs:d.proof_paths||[]}))}
-async function initAdmin(){if(!LIVE)return;
- const {data}=await sb.auth.getSession();
- if(data.session){USER=data.session.user;route()}}
 // halaman produk
 const CAT=[];function buildCat(){CAT.length=0;CAT.push(...P.map(x=>[x,"p"]),...F.map(x=>[x,"f"]),...N.map(x=>[x,"n"]),...R.map(x=>[x,"r"]))}buildCat();
 const KL={"Semua":"","Stok akun":"p","Flash sale":"f","Nokos":"n","Rental":"r"},PS={k:"Semua",g:"Semua",s:"def"};
@@ -443,18 +413,17 @@ function drawLayanan(){
  $("lr").innerHTML=R.length?R.map(x=>card(x,"r")).join(""):`<p class="sub" style="grid-column:1/-1">Belum ada akun rental.</p>`;
  $("lr").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
 // router sederhana (hash) agar jalan di GitHub Pages
-const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),masuk:$("v-masuk"),layanan:$("v-layanan")};
+const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),layanan:$("v-layanan")};
 function route(){const h=location.hash;
- let r=h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":(h.startsWith("#/masuk")||h.startsWith("#/daftar"))?"masuk":"home";
+ let r=h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":"home";
  Object.entries(views).forEach(([k,v])=>v.hidden=k!==r);
  const t=$("tick");if(t)t.hidden=r!=="home";
- if(r==="masuk")authView(h.startsWith("#/daftar")?"daftar":"masuk");
  if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="layanan")drawLayanan();
- const k=r==="laporan"?3:r==="masuk"?4:r==="produk"?1:r==="layanan"?2:0;
+ const k=r==="laporan"?3:r==="produk"?1:r==="layanan"?2:0;
  document.querySelectorAll(".bn a").forEach((a,i)=>a.classList.toggle("on",i===k));
  const id=h.startsWith("#/")?"":h.slice(1),el=id&&$(id);
  if(el&&r==="home")el.scrollIntoView();else if(!id)window.scrollTo(0,0)}
-if(LIVE)REP.length=0;addEventListener("hashchange",route);route();initAdmin();loadProducts();
+if(LIVE)REP.length=0;addEventListener("hashchange",route);route();loadProducts();
 </script>
 </body>
 </html>
