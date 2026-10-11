@@ -124,6 +124,13 @@ textarea.fi{min-height:90px;resize:vertical}
 .th{position:relative;display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--card2)}
 .th img{width:100%;height:100%;object-fit:cover;display:block}
 .th button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:#000c;color:#fff;font-size:13px;line-height:1}
+.gal{position:relative;border-radius:12px;overflow:hidden;background:var(--card2)}
+.gs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gs::-webkit-scrollbar{display:none}
+.gs img{flex:none;width:100%;height:240px;object-fit:cover;scroll-snap-align:center}
+.gn{position:absolute;right:8px;bottom:8px;background:#000a;color:#fff;font-size:12px;font-weight:800;border-radius:8px;padding:2px 10px}
+.ga{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:#000a;color:#fff;font-size:16px}
+.ga.l{left:8px}.ga.r{right:8px}
 @media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -251,10 +258,18 @@ function fill(){const q=$("q").value.toLowerCase();
  document.querySelectorAll("#v-home .c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
 function show({x,k}){
  const msg=encodeURIComponent("Halo admin Satria Store, saya mau tanya "+x.t);
- $("db").innerHTML=`<div class="dc" style="${bg(x.c)};overflow:hidden">${x.img?`<img src="${esc(x.img)}" alt="" style="width:100%;height:100%;object-fit:cover">`:x.e}</div><span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
+ const imgs=x.imgs&&x.imgs.length?x.imgs:(x.img?[x.img]:[]);
+ $("db").innerHTML=`${imgs.length?`<div class="gal"><div class="gs" id="gs">${imgs.map((u,i)=>`<img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy">`).join("")}</div>${imgs.length>1?`<span class="gn" id="gn">1/${imgs.length}</span><button class="ga l" id="gp" aria-label="Foto sebelumnya">‹</button><button class="ga r" id="gx" aria-label="Foto berikutnya">›</button>`:""}</div>`:`<div class="dc" style="${bg(x.c)}">${x.e}</div>`}<span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
  ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:26px">${rp(x.p)}</b></p>`:""}
  <a class="bt" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a><button class="bt al" id="cl">Tutup</button>`;
- $("cl").onclick=()=>$("dlg").close();$("dlg").showModal()}
+ $("cl").onclick=()=>$("dlg").close();
+ const gs=$("gs");
+ if(gs&&imgs.length>1){
+  gs.onscroll=()=>{$("gn").textContent=(Math.round(gs.scrollLeft/gs.clientWidth)+1)+"/"+imgs.length};
+  $("gp").onclick=()=>gs.scrollBy({left:-gs.clientWidth,behavior:"smooth"});
+  $("gx").onclick=()=>gs.scrollBy({left:gs.clientWidth,behavior:"smooth"});
+ }
+ $("dlg").showModal()}
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
 fill();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
 // banner
@@ -388,7 +403,10 @@ async function loadProducts(){if(!LIVE)return;
  const em={p:"🎮",f:"🔥",r:"🕹️",n:"📲",t:"🤝"};
  P.length=F.length=N.length=R.length=PT.length=0;
  data.forEach(d=>{const k=["f","r","n","t"].includes(d.category)?d.category:"p";
-  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:d.image_url||"",desc:esc(d.description||"")};
+  let im=d.images;if(typeof im==="string"){try{im=JSON.parse(im)}catch(e){im=[]}}
+  im=Array.isArray(im)?im.filter(Boolean):[];
+  if(!im.length&&d.image_url)im=[d.image_url];
+  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||"")};
   ({p:P,f:F,r:R,n:N,t:PT})[k].push(x)});
  buildCat();fill();route()}
 // ambil laporan dari Supabase (foto bukti sengaja tidak diambil, hanya admin yang melihat)
