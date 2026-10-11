@@ -114,6 +114,7 @@ textarea.fi{min-height:90px;resize:vertical}
 .msg{margin-top:12px;color:var(--mute);font-size:13px;min-height:20px}
 @media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
 <div class="top"><div class="w">
@@ -182,6 +183,15 @@ textarea.fi{min-height:90px;resize:vertical}
 <dialog id="dlg"><div class="db" id="db"></div></dialog>
 
 <script>
+/* =====================================================
+   ISI DI SINI (cuma 2 baris ini yang perlu kamu ubah)
+   Selama belum diisi, situs jalan di MODE DEMO (data hilang saat refresh)
+   ===================================================== */
+const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";   // 1) Project URL, contoh: https://abcdxyz.supabase.co (tombol Copy di halaman utama project)
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";      // 2) Project Settings > API Keys > anon public (eyJ...) atau Publishable key (sb_publishable_...)
+/* JANGAN isi kunci service_role / secret di sini! */
+const LIVE=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
+const sb=LIVE?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 const $=id=>document.getElementById(id), rp=n=>"Rp"+n.toLocaleString("id-ID");
 const slides=[
  {h:"Top up game cepat dan murah",p:"Semua metode bayar: QRIS, e-wallet, bank.",c:["#C21E8C","#4A1BA8"]},
@@ -267,28 +277,39 @@ $("rn").onclick=()=>{
  <label class="fl" for="f4">Kronologi</label><textarea class="fi" id="f4" maxlength="500"></textarea>
  <p class="msg" id="fm" role="status"></p><button class="pb" id="fs">Kirim laporan</button><button class="bt al" id="cl">Batal</button>`;
  $("cl").onclick=()=>$("dlg").close();
- $("fs").onclick=()=>{const t=$("f1").value.trim(),w=nm($("f2").value);
+ $("fs").onclick=async()=>{const t=$("f1").value.trim(),w=nm($("f2").value);
   if(!t||w.length<10){$("fm").textContent="Isi judul dan nomor WA pelaku yang benar (minimal 10 digit).";return}
-  REP.push({id:Math.max(...REP.map(x=>x.id))+1,t,wa:w,gid:$("f3").value.trim(),k:$("f4").value.trim(),at:new Date().toLocaleString("id-ID"),s:"wait"});
+  if(LIVE){const {error}=await sb.from("reports").insert({title:t,wa:w,game_id:$("f3").value.trim()||null,story:$("f4").value.trim()||null});if(error)return $("fm").textContent="Gagal kirim: "+error.message}else REP.push({id:Math.max(...REP.map(x=>x.id))+1,t,wa:w,gid:$("f3").value.trim(),k:$("f4").value.trim(),at:new Date().toLocaleString("id-ID"),s:"wait"});
   $("db").innerHTML=`<h3 style="font-size:20px">Laporan terkirim</h3><p class="sub">Laporan kamu masuk antrean dan tampil di daftar publik setelah disetujui admin.</p><button class="bt al" id="cl2">Tutup</button>`;$("cl2").onclick=()=>$("dlg").close();drawRep()};
  $("dlg").showModal()};
-$("rq").oninput=drawRep;$("rs").onclick=drawRep;$("rr").onclick=drawRep;
+$("rq").oninput=drawRep;$("rs").onclick=drawRep;$("rr").onclick=async()=>{await loadRep();drawRep()};
 // masuk & daftar (tampilan saja, belum ada backend)
 function authView(mode){const reg=mode==="daftar";
  $("v-masuk").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">${reg?"➕ DAFTAR AKUN":"➜ MASUK AKUN"}</div>
  <h1 class="big" style="font-size:clamp(30px,9vw,44px)">${reg?"Buat akun baru.":"Masuk ke akun kamu."}</h1>
- <p class="sub">${reg?"Isi data di bawah untuk mendaftar.":"Gunakan username atau email yang terdaftar."}</p>
+ <p class="sub">${reg?"Isi data di bawah untuk mendaftar.":"Gunakan email yang terdaftar."}</p>
  <form id="af" novalidate>
- <label class="fl" for="u">${reg?"Username":"Username atau email"}</label><input class="fi" id="u" autocomplete="username" placeholder="${reg?"username":"username atau email"}">
+ <label class="fl" for="u">${reg?"Username":"Email"}</label><input class="fi" id="u" autocomplete="username" placeholder="${reg?"username":"email kamu"}">
  ${reg?`<label class="fl" for="e">Email</label><input class="fi" id="e" type="email" autocomplete="email" placeholder="email kamu">`:""}
  <label class="fl" for="pw">Password</label><input class="fi" id="pw" type="password" autocomplete="${reg?"new-password":"current-password"}" placeholder="${reg?"Minimal 8 karakter":"Password kamu"}">
  <button class="pb" style="width:100%;margin-top:20px" type="submit">${reg?"Daftar":"Masuk"}</button></form>
  <p class="msg" id="am" role="status"></p>
  <p style="text-align:center;margin-top:8px">${reg?`Sudah punya akun? <a href="#/masuk" style="color:var(--pink);font-weight:800">Masuk</a>`:`Belum punya akun? <a href="#/daftar" style="color:var(--pink);font-weight:800">Daftar di sini</a>`}</p></section>`;
- $("af").onsubmit=e=>{e.preventDefault();const m=$("am");
+ $("af").onsubmit=async e=>{e.preventDefault();const m=$("am");
   if(!$("u").value.trim()||!$("pw").value)return m.textContent="Isi username dan password dulu.";
   if(reg&&(!/^\S+@\S+\.\S+$/.test($("e").value)||$("pw").value.length<8))return m.textContent="Isi email yang benar dan password minimal 8 karakter.";
-  m.textContent="Form sudah lengkap, tapi "+(reg?"pendaftaran":"login")+" belum aktif. Nanti disambungkan ke backend (Supabase Auth)."}}
+  if(!LIVE)return m.textContent="Mode demo: isi SUPABASE_URL dan SUPABASE_KEY di index.html dulu.";
+  const em=reg?$("e").value.trim():$("u").value.trim();
+  const {error}=reg?await sb.auth.signUp({email:em,password:$("pw").value,options:{data:{username:$("u").value.trim()}}}):await sb.auth.signInWithPassword({email:em,password:$("pw").value});
+  m.textContent=error?"Gagal: "+error.message:reg?"Pendaftaran berhasil. Cek email jika diminta verifikasi, lalu masuk.":"Berhasil masuk."}}
+// ambil laporan dari Supabase (mode LIVE)
+async function loadRep(){if(!LIVE)return;
+ const {data,error}=await sb.from("reports").select("*").order("id",{ascending:false});
+ if(error)return;REP.length=0;
+ data.forEach(d=>REP.push({id:d.id,t:d.title,wa:d.wa,gid:d.game_id||"",k:d.story||"",at:new Date(d.created_at).toLocaleString("id-ID"),s:d.status}))}
+async function initAdmin(){if(!LIVE)return;
+ const {data}=await sb.auth.getSession();
+ if(data.session){const r=await sb.from("admins").select("user_id").maybeSingle();ADM=!!r.data;route()}}
 // halaman produk
 const CAT=[...P.map(x=>[x,"p"]),...F.map(x=>[x,"f"]),...R.map(x=>[x,"r"])];
 const KL={"Semua":"","Stok Akun":"p","Flash Sale":"f","Rental":"r"},PS={k:"Semua",g:"Semua",s:"def"};
@@ -308,6 +329,8 @@ function drawAdmin(){
  $("aW").textContent=w;$("aO").textContent=REP.length-w;$("aT").textContent=REP.length;
  $("al").innerHTML=[...REP].sort((a,b)=>(a.s==="wait"?0:1)-(b.s==="wait"?0:1)||b.id-a.id).map(r=>`<div class="rp" style="flex-direction:column;margin:0 0 12px"><div>${badge(r)}<div style="font-weight:800;font-size:17px;margin-top:6px"><span style="color:var(--pink)">#${r.id}</span> ${esc(r.t)}</div><div class="wa">No WA Pelaku: <b>${r.wa}</b>${r.gid?` • ID Game: <b>${esc(r.gid)}</b>`:""}</div>${r.k?`<p class="sub" style="margin:0 0 6px">${esc(r.k)}</p>`:""}<div class="tm">🕒 ${r.at}</div></div><div class="two" style="margin:0">${r.s==="wait"?`<button class="pb" data-a="ok" data-id="${r.id}">Setujui</button><button class="ob" data-a="del" data-id="${r.id}">Tolak</button>`:`<button class="ob" data-a="del" data-id="${r.id}" style="grid-column:1/-1">Hapus laporan</button>`}</div></div>`).join("")||`<p class="sub">Belum ada laporan.</p>`;
  $("al").querySelectorAll("button").forEach(b=>b.onclick=()=>{const id=+b.dataset.id;
+  if(LIVE){const q=b.dataset.a==="ok"?sb.from("reports").update({status:"ok"}).eq("id",id):sb.from("reports").delete().eq("id",id);
+   q.then(async({error})=>{if(error)alert("Gagal: "+error.message);await loadRep();drawAdmin()});return}
   if(b.dataset.a==="ok")REP.find(r=>r.id===id).s="ok";else REP.splice(REP.findIndex(r=>r.id===id),1);drawAdmin()})}
 // halaman layanan
 const SV=[
@@ -323,14 +346,17 @@ let ADM=false;const ADMU="farrel",ADMH="6007b590ec9ec2639be31097728a765187d96774
 async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
 function adminLogin(){
  $("v-alogin").innerHTML=`<section class="pn" style="padding:22px"><div class="pill">🔧 LOGIN ADMIN</div><h1 class="big" style="font-size:clamp(30px,9vw,44px)">Masuk sebagai admin.</h1><p class="sub">Khusus pengelola toko.</p>
- <form id="lf" novalidate><label class="fl" for="lu">Username</label><input class="fi" id="lu" autocomplete="username" placeholder="username admin">
+ <form id="lf" novalidate><label class="fl" for="lu">${LIVE?"Email":"Username"}</label><input class="fi" id="lu" autocomplete="username" placeholder="${LIVE?"email admin":"username admin"}">
  <label class="fl" for="lp">Password</label><input class="fi" id="lp" type="password" autocomplete="current-password" placeholder="Password admin">
  <button class="pb" style="width:100%;margin-top:20px" type="submit">Masuk</button></form><p class="msg" id="lm" role="status"></p></section>`;
  $("lf").onsubmit=async e=>{e.preventDefault();
   if(!window.crypto||!crypto.subtle)return $("lm").textContent="Browser ini belum mendukung login demo (butuh https).";
-  const ok=$("lu").value.trim()===ADMU&&await sha("kartrid:"+$("lp").value)===ADMH;
+  let ok=false;
+  if(LIVE){const {error}=await sb.auth.signInWithPassword({email:$("lu").value.trim(),password:$("lp").value});
+   if(!error){const {data}=await sb.from("admins").select("user_id").maybeSingle();ok=!!data;if(!ok){await sb.auth.signOut();return $("lm").textContent="Akun ini bukan admin."}}}
+  else ok=$("lu").value.trim()===ADMU&&await sha("kartrid:"+$("lp").value)===ADMH;
   if(ok){ADM=true;route()}else $("lm").textContent="Username atau password salah."}}
-$("alo").onclick=()=>{ADM=false;location.hash="#/"};
+$("alo").onclick=()=>{ADM=false;if(LIVE)sb.auth.signOut();location.hash="#/"};
 // router sederhana (hash) agar jalan di GitHub Pages
 const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),masuk:$("v-masuk"),admin:$("v-admin"),alogin:$("v-alogin"),layanan:$("v-layanan")};
 function route(){const h=location.hash;
@@ -338,12 +364,12 @@ function route(){const h=location.hash;
  if(r==="admin"&&!ADM)r="alogin";Object.entries(views).forEach(([k,v])=>v.hidden=k!==r);
  const t=$("tick");if(t)t.hidden=r!=="home";
  if(r==="masuk")authView(h.startsWith("#/daftar")?"daftar":"masuk");
- if(r==="laporan")drawRep();if(r==="produk")drawProduk();if(r==="admin")drawAdmin();if(r==="alogin")adminLogin();if(r==="layanan")drawLayanan();
+ if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="admin"){drawAdmin();loadRep().then(drawAdmin)}if(r==="alogin")adminLogin();if(r==="layanan")drawLayanan();
  const k=r==="laporan"?3:r==="masuk"?4:r==="produk"?1:r==="layanan"?2:0;
  document.querySelectorAll(".bn a").forEach((a,i)=>a.classList.toggle("on",i===k));
  const id=h.startsWith("#/")?"":h.slice(1),el=id&&$(id);
  if(el&&r==="home")el.scrollIntoView();else if(!id)window.scrollTo(0,0)}
-addEventListener("hashchange",route);route();
+if(LIVE)REP.length=0;addEventListener("hashchange",route);route();initAdmin();
 
 </script>
 </body>
