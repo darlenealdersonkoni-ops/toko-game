@@ -21,7 +21,7 @@ h1,h2,h3{font-family:var(--d);letter-spacing:.005em}
 button{font:inherit;color:inherit;cursor:pointer}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.w{max-width:720px;margin:0 auto;padding:0 14px}
+.w{max-width:1160px;margin:0 auto;padding:0 clamp(14px,3vw,28px)}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding:10px 0 0;background:linear-gradient(var(--bg) 75%,transparent)}
 .nav{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 10px}
 .brand{display:flex;align-items:center;gap:8px;flex:none}
@@ -55,7 +55,7 @@ a{color:inherit;text-decoration:none}
 .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .hd h2{font-size:21px;font-weight:700}
 .hd a{color:var(--acc);font-weight:700;font-size:14px}
-.row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 14px 12px;margin:0 -14px;scrollbar-width:none}
+.row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px clamp(14px,3vw,28px) 12px;margin:0 calc(-1*clamp(14px,3vw,28px));scrollbar-width:none}
 .row::-webkit-scrollbar{display:none}
 .c{flex:none;width:160px;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;padding:0;text-align:left;display:flex;flex-direction:column}
 .c:hover{border-color:var(--acc)}
@@ -77,21 +77,21 @@ a{color:inherit;text-decoration:none}
 hr{border:0;border-top:1px solid var(--line);margin:26px 0 18px}
 .ft{text-align:center;color:var(--mute);font-size:13px;display:grid;gap:8px}
 .bn{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.bn div{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.bn div{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
 .bn a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;font-size:12px;font-weight:700;color:var(--mute)}
 .bn a span{width:52px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px}
 .bn a.on{color:var(--acc)}.bn a.on span{background:var(--fill)}
 .chat{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:25;width:56px;height:56px;border-radius:16px;border:0;background:var(--fill);color:var(--onf);font-size:24px;box-shadow:0 6px 18px #0005}
-dialog{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:0;width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:0;width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
 dialog::backdrop{background:#050A18c0}
 .db{padding:16px;display:grid;gap:8px}
-.dc{height:150px;border-radius:12px;display:grid;place-items:center;font-size:64px;color:#fff;overflow:hidden}
+.dc{height:clamp(180px,42vw,250px);border-radius:12px;display:grid;place-items:center;font-size:64px;color:#fff;overflow:hidden}
 .bt,.pb{display:block;text-align:center;background:var(--fill);color:var(--onf);border:0;padding:13px;font-weight:800;margin-top:6px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
 .bt.al{background:none;border:1px solid var(--line);color:var(--ink);clip-path:none;border-radius:12px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chip{border:1px solid var(--line);background:var(--card2);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px}
 .chip[aria-pressed="true"]{background:var(--fill);border-color:var(--fill);color:var(--onf)}
-.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
+.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px;margin-top:14px}
 .g2 .c{width:auto}
 [hidden]{display:none!important}
 .pn{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px}
@@ -137,6 +137,25 @@ textarea.fi{min-height:90px;resize:vertical}
 .opts{display:grid;gap:8px;margin-top:6px}
 .opt{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:12px 14px;font-weight:800}
 .opt:hover{border-color:var(--acc)}
+/* ===== tampilan lebih besar & menyesuaikan layar ===== */
+.c.tu .cv{height:auto;aspect-ratio:1/1;font-size:64px}
+.row.tup{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;overflow:visible;margin:0;padding:2px 0 12px}
+.row.tup .c{width:auto}
+.c.tu .t{font-size:16px}
+@media (min-width:760px){
+ body{font-size:16px}
+ .menu{grid-template-columns:1fr 1fr}
+ .c{width:210px}
+ .cv{height:150px}
+ .s{min-height:260px;padding:36px 40px 44px}
+ .s h2{font-size:clamp(32px,4vw,46px)}
+ .s p{font-size:17px}
+ .row.tup{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+ .g2{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+ .hd h2{font-size:26px}
+ .pn{padding:22px}
+}
+@media (max-width:420px){.row.tup{grid-template-columns:1fr 1fr;gap:10px}.c.tu .t{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -159,7 +178,7 @@ textarea.fi{min-height:90px;resize:vertical}
   <a class="m" href="https://whatsapp.com/channel/0029Vb9JKEZ3gvWVR7nwBB3M" target="_blank" rel="noopener"><span>Saluran WhatsApp</span><i>📢</i></a>
  </div>
 
- <section class="sec" id="sTopup"><div class="hd"><h2>⚡ Top up game</h2><a href="#/layanan">Lihat semua</a></div><div class="row" id="rTopup"></div></section>
+ <section class="sec" id="sTopup"><div class="hd"><h2>⚡ Top up game</h2><a href="#/layanan">Lihat semua</a></div><div class="row tup" id="rTopup"></div></section>
 
  <section class="sec"><div class="hd"><h2>Info terbaru</h2></div><div class="row" id="info"></div></section>
 
@@ -251,7 +270,7 @@ const TU=[
  {g:"Roblox",img:"roblox.jpg",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
   items:mkN([80,400,800,1700,4500],"Robux","Robux")}];
 function tuCard(i){const x=TU[i];
- return `<button class="c" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}</div>
+ return `<button class="c tu" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}</div>
  <div class="ci"><span class="g">Top up</span><span class="t">${esc(x.g)}</span><span class="sv">${x.items.length} pilihan</span><span class="p pk" style="margin-top:auto">Pilih paket</span></div></button>`}
 function drawTU(){const h=TU.length?TU.map((_,i)=>tuCard(i)).join(""):`<p class="sub" style="grid-column:1/-1">Top up segera hadir.</p>`;
  $("sTopup").hidden=!TU.length;
