@@ -3,479 +3,304 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Satria Store — Marketplace Game</title>
+<meta name="robots" content="noindex,nofollow">
+<title>Admin Satria Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
-:root{--bg:#0B1220;--card:#121B30;--card2:#19243F;--ink:#EEF2FA;--mute:#9AA7C2;--line:#27355A;--acc:#F2B33D;--fill:#F2B33D;--onf:#1A1204;--ok:#3BD79C;--red:#F0566A;--amber:#F59E0B;--d:"Chakra Petch","Plus Jakarta Sans",system-ui,sans-serif;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#EEF1F7;--card:#fff;--card2:#E7ECF6;--ink:#101A33;--mute:#56627F;--line:#CBD4E5;--acc:#8A5A00;--ok:#0B7A47;--red:#C42B42;--amber:#9A5B00}}
-:root[data-theme="light"]{--bg:#EEF1F7;--card:#fff;--card2:#E7ECF6;--ink:#101A33;--mute:#56627F;--line:#CBD4E5;--acc:#8A5A00;--ok:#0B7A47;--red:#C42B42;--amber:#9A5B00}
-:root[data-theme="dark"]{--bg:#0B1220;--card:#121B30;--card2:#19243F;--ink:#EEF2FA;--mute:#9AA7C2;--line:#27355A;--acc:#F2B33D;--ok:#3BD79C;--red:#F0566A;--amber:#F59E0B}
+:root{--bg:#070B1C;--bg2:#0D1233;--card:#0F1636;--card2:#182050;--ink:#EEF1FF;--mute:#9AA4D4;--line:#29336E;--acc:#F2B33D;--accT:#F2B33D;--accInk:#1B1300;--ok:#34D399;--wt:#F59E0B;--red:#EF4B42;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+@media (prefers-color-scheme:light){:root{--bg:#F3F4FB;--bg2:#FBF3E2;--card:#fff;--card2:#EEF0FB;--ink:#12163A;--mute:#575C8A;--line:#D5D8EF;--acc:#F2A81D;--accT:#9A5B00;--ok:#0F8F5F;--wt:#B45309;--red:#C42B42}}
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-padding-top:150px;scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.55 "Plus Jakarta Sans",system-ui,sans-serif;padding-bottom:100px}
-h1,h2,h3,p{margin:0}
-h1,h2,h3{font-family:var(--d);letter-spacing:.005em}
+body{margin:0;min-height:100vh;color:var(--ink);font:500 15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(800px 360px at 90% -8%,#F2B33D22,transparent),radial-gradient(700px 420px at -10% 8%,#4B5CFF2c,transparent),linear-gradient(180deg,var(--bg),var(--bg2));background-attachment:fixed}
+h1,h3,.ttl{font-family:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif}
+h1,h3{margin:0 0 6px}
 button{font:inherit;color:inherit;cursor:pointer}
-a{color:inherit;text-decoration:none}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.w{max-width:720px;margin:0 auto;padding:0 14px}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding:10px 0 0;background:linear-gradient(var(--bg) 75%,transparent)}
-.nav{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 10px}
-.brand{display:flex;align-items:center;gap:8px;flex:none}
-.mark{flex:none;width:34px;height:38px;background:var(--fill);color:var(--onf);clip-path:polygon(50% 0,100% 14%,100% 58%,50% 100%,0 58%,0 14%);display:grid;place-items:center;font:700 17px var(--d);padding-bottom:5px}
-.wm{font:700 17px/1 var(--d)}
-@media (max-width:560px){.wm{display:none}}
-.sr{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:0 12px;background:var(--card2)}
-.sr input{flex:1;min-width:0;background:none;border:0;color:var(--ink);font:inherit;padding:9px 0}
-.sr input:focus{outline:0}
-.sr:focus-within{border-color:var(--acc)}
-.ib{flex:none;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card2)}
-.tick{display:flex;align-items:center;gap:8px;justify-content:center;font-size:13px;padding:8px 0;border-bottom:1px solid var(--line);margin-top:10px;color:var(--mute)}
-.tick button{background:none;border:0;border-left:1px solid var(--line);padding:0 10px;margin-left:6px;color:var(--mute)}
-.ban{position:relative;overflow:hidden;border-radius:18px;margin-top:14px;border:1px solid var(--line)}
-.sl{display:flex;transition:transform .5s}
-.s{position:relative;overflow:hidden;flex:none;width:100%;min-height:190px;padding:24px 22px 30px;display:flex;flex-direction:column;justify-content:center;gap:8px;color:#fff}
-.s::after{content:"";position:absolute;right:-14px;bottom:-26px;width:150px;height:172px;background:#fff;opacity:.08;clip-path:polygon(50% 0,100% 14%,100% 58%,50% 100%,0 58%,0 14%)}
-.s h2{font-size:clamp(25px,7vw,36px);font-weight:700;line-height:1.1;max-width:11em;position:relative;z-index:1}
-.s p{max-width:20em;font-size:14px;opacity:.92;position:relative;z-index:1}
-.dots{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:6px;justify-content:center;z-index:2}
-.dots i{width:9px;height:9px;border-radius:9px;background:#fff6;transition:width .3s}
-.dots i.on{width:28px;background:#fff}
-.menu{display:grid;gap:10px;margin-top:14px}
-.m{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:800;font-size:16px;text-align:left;width:100%}
-.m i{flex:none;width:42px;height:42px;border-radius:12px;background:var(--card2);display:grid;place-items:center;font-style:normal}
-.hot{background:var(--red);color:#fff;border-radius:6px;font-size:12px;font-weight:800;padding:2px 8px;margin-right:8px}
-.sec{margin-top:28px}
-.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.hd h2{font-size:21px;font-weight:700}
-.hd a{color:var(--acc);font-weight:700;font-size:14px}
-.row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 14px 12px;margin:0 -14px;scrollbar-width:none}
-.row::-webkit-scrollbar{display:none}
-.c{flex:none;width:160px;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;padding:0;text-align:left;display:flex;flex-direction:column}
-.c:hover{border-color:var(--acc)}
-.cv{height:112px;position:relative;display:grid;place-items:center;font-size:44px;color:#fff}
-.off{position:absolute;left:8px;top:8px;background:var(--fill);color:var(--onf);font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px}
-.ci{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
-.g{color:var(--acc);font-size:12px;font-weight:800}
-.t{font-weight:800;font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px}
-.sv{color:var(--mute);font-size:12px;margin-bottom:4px}
-.o{color:var(--red);text-decoration:line-through;font-size:12px;margin-top:auto;border-top:1px solid var(--line);padding-top:6px}
-.p{color:var(--ok);font:700 18px var(--d)}
-.p.pk{color:var(--acc)}
-.lst{display:grid;gap:12px;margin-top:12px}
-.lst a{display:flex;gap:12px;align-items:center;font-weight:700}
-.lst a:hover{color:var(--acc)}
-.tr{display:grid;gap:12px}
-.tr p{display:flex;gap:12px;align-items:center}
-.tr i,.lst i{font-style:normal;width:24px;text-align:center}
-hr{border:0;border-top:1px solid var(--line);margin:26px 0 18px}
-.ft{text-align:center;color:var(--mute);font-size:13px;display:grid;gap:8px}
-.bn{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.bn div{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
-.bn a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;font-size:12px;font-weight:700;color:var(--mute)}
-.bn a span{width:52px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px}
-.bn a.on{color:var(--acc)}.bn a.on span{background:var(--fill)}
-.chat{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:25;width:56px;height:56px;border-radius:16px;border:0;background:var(--fill);color:var(--onf);font-size:24px;box-shadow:0 6px 18px #0005}
-dialog{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:0;width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
-dialog::backdrop{background:#050A18c0}
-.db{padding:16px;display:grid;gap:8px}
-.dc{height:150px;border-radius:12px;display:grid;place-items:center;font-size:64px;color:#fff}
-.bt,.pb{display:block;text-align:center;background:var(--fill);color:var(--onf);border:0;padding:13px;font-weight:800;margin-top:6px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
-.bt.al{background:none;border:1px solid var(--line);color:var(--ink);clip-path:none;border-radius:12px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.w{max-width:760px;margin:0 auto;padding:14px 14px 40px}
+.pn{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;margin-top:20px}
+.mu{color:var(--mute)}.sm{font-size:13px}
+.top{display:flex;align-items:center;gap:12px;padding:6px 0}
+.top>div:nth-child(2){flex:1;min-width:0}
+.mk{flex:none;width:38px;height:44px;display:grid;place-items:center;font:800 15px "Bricolage Grotesque",sans-serif;color:var(--accInk);background:linear-gradient(160deg,#FFD878,#F2A81D 60%,#E8791A);clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%);padding-bottom:6px}
+.ttl{font-size:21px;font-weight:800;line-height:1.1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 8px;text-align:center;font-size:12px;font-weight:700;color:var(--mute)}
+.stats b{display:block;font:800 26px "Bricolage Grotesque",sans-serif;color:var(--accT)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px;margin-top:14px}
+.tab{border:0;background:none;border-radius:999px;padding:10px;font-weight:800}
+.tab[aria-pressed="true"]{background:var(--acc);color:var(--accInk)}
+.chips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--card2);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px}
-.chip[aria-pressed="true"]{background:var(--fill);border-color:var(--fill);color:var(--onf)}
-.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
-.g2 .c{width:auto}
-[hidden]{display:none!important}
-.pn{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px}
-.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card2);color:var(--acc);border-radius:8px;padding:5px 12px;font-weight:800;font-size:13px}
-.big{font-size:clamp(26px,7vw,36px);font-weight:700;line-height:1.15;margin:14px 0 8px}
-.sub{color:var(--mute)}
-.st{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
-.st div{border:1px solid var(--line);border-radius:12px;text-align:center;padding:12px 4px;font-weight:700;font-size:13px}
-.st b{display:block;color:var(--acc);font:700 26px var(--d)}
-.fi{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;padding:13px 14px}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.fl{display:block;font-weight:700;margin:14px 0 6px}
+.fi{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:14px;color:var(--ink);font:inherit;padding:12px 14px}
 .fi:focus{outline:0;border-color:var(--acc)}
 textarea.fi{min-height:90px;resize:vertical}
-.fl{display:block;font-weight:700;margin:14px 0 6px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-.pb{margin-top:10px}
-.pb:disabled{opacity:.6}
-.ob{border:1px solid var(--line);border-radius:12px;background:none;font-weight:800;padding:14px;color:var(--ink)}
-.rp{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:12px;text-align:left;width:100%}
-.scam{flex:none;width:76px;height:76px;border-radius:12px;background:#0b0f2e;display:grid;place-items:center}
-.scam span{border:3px solid #E5384A;color:#E5384A;font:700 15px var(--d);padding:1px 7px;border-radius:6px;transform:rotate(-12deg);letter-spacing:.04em}
-.bd{display:flex;flex-wrap:wrap;gap:6px}
-.bd span{font-size:12px;font-weight:800;border-radius:6px;padding:2px 10px}
-.ok{background:#12975a33;color:var(--ok);border:1px solid var(--ok)}
-.wait{background:#F59E0B33;color:var(--amber);border:1px solid var(--amber)}
-.bad{background:#F0566A22;color:var(--red)}
-.wa{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0 6px;font-size:13px}
-.tm{color:var(--mute);font-size:13px}
-.msg{margin-top:12px;color:var(--mute);font-size:13px;min-height:20px}
-.pv{width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--line);margin-top:8px;background:var(--card2)}
-.note{color:var(--mute);font-size:12px;margin-top:6px}
-.pvs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
-.pvs:empty{display:none}
-.th{position:relative;display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--card2)}
-.th img{width:100%;height:100%;object-fit:cover;display:block}
-.th button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:#000c;color:#fff;font-size:13px;line-height:1}
-.gal{position:relative;border-radius:12px;overflow:hidden;background:var(--card2)}
-.gs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.gs::-webkit-scrollbar{display:none}
-.gs img{flex:none;width:100%;height:240px;object-fit:cover;scroll-snap-align:center}
-.gn{position:absolute;right:8px;bottom:8px;background:#000a;color:#fff;font-size:12px;font-weight:800;border-radius:8px;padding:2px 10px}
-.ga{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:#000a;color:#fff;font-size:16px}
-.ga.l{left:8px}.ga.r{right:8px}
-.opts{display:grid;gap:8px;margin-top:6px}
-.opt{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:12px 14px;font-weight:800}
-.opt:hover{border-color:var(--acc)}
-@media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}}
+input[type=file].fi{padding:9px 10px}
+input[type=file]::file-selector-button{border:0;border-radius:999px;background:var(--acc);color:var(--accInk);font:800 13px "Plus Jakarta Sans",sans-serif;padding:8px 14px;margin-right:10px;cursor:pointer}
+.pb{border:0;border-radius:999px;background:var(--acc);color:var(--accInk);font-weight:800;padding:12px 18px}
+.ob{border:1px solid var(--line);border-radius:999px;background:none;font-weight:700;padding:10px 16px}
+.ob.dg{color:var(--red);border-color:var(--red)}
+.pb:disabled{opacity:.6;cursor:wait}
+.it{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px;margin-top:10px}
+.th{flex:none;width:68px;height:68px;border-radius:14px;object-fit:cover;background:var(--card2);display:grid;place-items:center;font-size:28px}
+.in{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.in b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr{color:var(--ok);font-weight:800}.pr s{color:var(--mute);font-weight:500}
+.ac{display:flex;gap:8px;flex-wrap:wrap}
+.tg{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:1px 9px;background:var(--card2);border:1px solid var(--line);color:var(--accT)}
+.tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;border:1px solid}
+.tag.ok{color:var(--ok)}.tag.wt{color:var(--wt)}
+.msg{color:var(--mute);font-size:13px;min-height:20px;margin:10px 0 0}
+.ck{display:flex;gap:8px;align-items:center;margin:14px 0}
+.ig,.phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:8px}
+.ig:empty,.phs:empty{display:none}
+.ph{position:relative;display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;border:2px solid var(--line);background:var(--card2)}
+.ph.cv{border-color:var(--acc)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph button{position:absolute;width:26px;height:26px;border-radius:50%;border:0;background:#000c;color:#fff;font-size:13px;line-height:1}
+.ph .rm{top:4px;right:4px}.ph .st{top:4px;left:4px}
+.cvb{position:absolute;left:4px;bottom:4px;background:var(--acc);color:var(--accInk);font-size:10px;font-weight:800;border-radius:999px;padding:1px 8px}
+.gh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 2px;font:800 17px "Bricolage Grotesque","Plus Jakarta Sans",sans-serif;color:var(--accT)}
+.tr{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;margin-top:8px}
+.tr label{display:block;font-size:11px;font-weight:700;color:var(--mute);margin:0 0 3px}
+.tr .fi{padding:9px 12px;border-radius:12px}
+.tr .ca{display:flex;align-items:center;gap:6px;height:40px}
+.tr .ca input{width:20px;height:20px;accent-color:var(--acc)}
+.tr .ac{grid-column:1/-1}
+@media (min-width:620px){.tr{grid-template-columns:1fr 1.3fr .7fr auto auto;align-items:end}.tr .ac{grid-column:auto;flex-wrap:nowrap}}
+dialog{border:1px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);padding:0;width:min(480px,calc(100vw - 20px));max-height:calc(100dvh - 20px);overflow:auto}
+dialog::backdrop{background:#030618c0}
+.db{padding:18px;display:grid;gap:4px}.db .ob{margin-top:6px}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<div class="top"><div class="w">
- <div class="nav"><a class="brand" href="#/" aria-label="Satria Store, beranda"><span class="mark" aria-hidden="true">S</span><span class="wm">Satria Store</span></a>
-  <label class="sr"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="Cari produk, layanan…" aria-label="Cari produk"></label>
-  <button class="ib" id="th" aria-label="Ganti tema">🌙</button></div>
- <div class="tick" id="tick"><span aria-hidden="true">🛡️</span><span>Transaksi lewat admin resmi Satria Store. Cek penjual dulu di menu Laporan.</span><button id="tx" aria-label="Tutup">✕</button></div>
-</div></div>
-
-<main class="w view" id="v-home">
- <div class="ban"><div class="sl" id="sl"></div><div class="dots" id="dots"></div></div>
- <div class="menu">
-  <a class="m" href="#/layanan"><span><span class="hot">HOT</span>Top Up All Game</span><i>⚡</i></a>
-  <a class="m" href="#/produk" data-f="Nokos"><span>Nokos (nomor kosong)</span><i>📲</i></a>
-  <a class="m" href="https://wa.me/6285151949632" target="_blank" rel="noopener"><span>WA Admin</span><i>💬</i></a>
-  <a class="m" href="#/laporan"><span>Cek keaslian akun &amp; penjual</span><i>🛡️</i></a>
-  <a class="m" href="https://whatsapp.com/channel/0029Vb9JKEZ3gvWVR7nwBB3M" target="_blank" rel="noopener"><span>Saluran WhatsApp</span><i>📢</i></a>
- </div>
-
- <section class="sec" id="sTopup"><div class="hd"><h2>⚡ Top up game</h2><a href="#/layanan">Lihat semua</a></div><div class="row" id="rTopup"></div></section>
-
- <section class="sec"><div class="hd"><h2>Info terbaru</h2></div><div class="row" id="info"></div></section>
-
- <p class="sub" id="empty" hidden style="margin-top:28px;text-align:center"></p>
- <section class="sec" id="sStok"><div class="hd"><h2>Stok akun</h2><a href="#/produk" data-f="Stok akun">Lihat semua</a></div><div class="row" id="rStok"></div></section>
- <section class="sec" id="flash"><div class="hd"><h2>⚡ Flash sale</h2><a href="#/produk" data-f="Flash sale">Lihat semua</a></div><div class="row" id="rFlash"></div></section>
- <section class="sec" id="sNokos"><div class="hd"><h2>📲 Nokos</h2><a href="#/produk" data-f="Nokos">Lihat semua</a></div><div class="row" id="rNokos"></div></section>
- <section class="sec" id="layanan"><div class="hd"><h2>💼 Rental akun</h2><a href="#/layanan">Lihat semua</a></div><div class="row" id="rRent"></div></section>
- <section class="sec" id="partner" hidden><div class="hd"><h2>🤝 Partner resmi</h2></div><div class="row" id="rPart"></div></section>
-
- <section class="sec" id="tentang">
-  <h1 style="font-size:30px;font-weight:700">Satria Store</h1>
-  <p style="color:var(--mute);margin-top:12px">Marketplace game terpercaya. Tempat untuk rental akun, stok akun, nokos, top up, dan layanan game lainnya.</p>
-  <h2 style="font-size:20px;margin-top:26px">Sosial media</h2>
-  <div class="lst">
-   <a href="https://www.tiktok.com/@satriaastore22?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener"><i>♪</i>TikTok @satriaastore22</a>
-   <a href="https://whatsapp.com/channel/0029Vb9JKEZ3gvWVR7nwBB3M" target="_blank" rel="noopener"><i>📢</i>Saluran WhatsApp</a>
-   <a href="https://wa.me/6285151949632" target="_blank" rel="noopener"><i>💬</i>WhatsApp admin</a>
-  </div>
-  <h2 style="font-size:20px;margin-top:26px">Kenapa belanja di sini</h2>
-  <div class="tr" style="margin-top:12px"><p><i>🛡️</i>Transaksi aman dan data jelas</p><p><i>⚡</i>Proses cepat setelah pembayaran</p><p><i>🎧</i>Layanan admin setiap hari</p></div>
-  <hr>
-  <div class="ft"><p>© 2026 Satria Store</p></div>
- </section>
-</main>
-
-<main class="w view" id="v-laporan" hidden>
- <section class="pn"><div class="pill">📄 Laporan publik</div><h1 class="big">Cari laporan berdasarkan ID game atau nomor WA.</h1><p class="sub">Daftar ini hanya menampilkan data laporan non-sensitif. Nama, email, dan WhatsApp pelapor hanya bisa dilihat admin. Foto bukti tampil setelah laporan disetujui admin.</p>
- <div class="st"><div><b id="sT">0</b>Total laporan</div><div><b id="sG">0</b>ID game</div><div><b id="sW">0</b>No WA</div></div></section>
- <section class="pn"><label class="sr" style="border-radius:12px"><span aria-hidden="true">🔍</span><input id="rq" type="search" placeholder="Cari ID game atau nomor WA pelaku…" aria-label="Cari laporan"></label>
- <div class="two"><button class="pb" id="rs">Cari laporan</button><button class="ob" id="rn">Buat laporan</button></div></section>
- <section class="pn" style="text-align:center"><div class="pill">⚠ Database</div><h2 class="big" style="font-size:28px;margin-top:12px">Data bermasalah</h2><p class="sub" id="rsum"></p><button class="ob" id="rr" style="width:100%;margin-top:14px">Refresh</button></section>
- <section class="pn"><h2 style="font-size:22px">⚠ Daftar data bermasalah</h2><p class="sub">Tap kartu laporan untuk melihat detail.</p><div id="rl"></div></section>
-</main>
-<main class="w view" id="v-produk" hidden>
- <section class="pn"><div class="pill">🛍️ Produk</div><h1 class="big">Semua produk.</h1><p class="sub">Pakai kolom cari di atas atau filter di bawah.</p><div id="pf"></div><div class="g2" id="pg"></div></section>
-</main>
-<main class="w view" id="v-layanan" hidden>
- <section class="pn"><div class="pill">💼 Layanan</div><h1 class="big">Layanan Satria Store.</h1><p class="sub">Pilih layanan, lalu pesan lewat WhatsApp admin.</p><div id="lv"></div></section>
- <section class="pn" id="topup"><h2 style="font-size:22px">⚡ Top up game</h2><p class="sub">Diamond Free Fire, diamond Mobile Legends, dan Robux Roblox. Pilih game, pilih nominal, lalu lanjut ke WhatsApp admin.</p><div class="g2" id="lt"></div></section>
- <section class="pn"><h2 style="font-size:22px">Rental akun</h2><div class="g2" id="lr"></div></section>
-</main>
-
-<button class="chat" aria-label="Chat admin lewat WhatsApp" onclick="window.open('https://wa.me/6285151949632','_blank','noopener')">💬</button>
-<nav class="bn" aria-label="Menu utama"><div>
- <a href="#/" class="on"><span>🏠</span>Home</a><a href="#/produk"><span>🛍️</span>Produk</a><a href="#/layanan"><span>💼</span>Layanan</a><a href="#/laporan"><span>🛡️</span>Laporan</a>
-</div></nav>
+<div class="w" id="app"></div>
 <dialog id="dlg"><div class="db" id="db"></div></dialog>
-
 <script>
-/* =====================================================
-   SUPABASE (isi 2 baris ini; jangan pernah isi kunci service_role / secret)
-   Selama belum diisi, situs jalan di MODE DEMO (data hilang saat refresh)
-   ===================================================== */
+/* Samakan dengan index.html. Jangan pernah isi kunci service_role / secret. */
 const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";
 const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";
-const WA="https://wa.me/6285151949632";
-const LIVE=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
-const sb=LIVE?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-const $=id=>document.getElementById(id), rp=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
+
+const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nm=s=>{s=s.replace(/\D/g,"");return s.startsWith("0")?"62"+s.slice(1):s};
-const wlist=s=>[...new Set(String(s).split(/[,;\n]+/).map(nm).filter(x=>x.length>=10))];
-const ilist=s=>[...new Set(String(s).split(/[\s,;]+/).map(x=>x.replace(/\D/g,"")).filter(Boolean))];
+const rp=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
 const fmt=s=>String(s||"").split(",").filter(Boolean).map(esc).join(", ");
-const bg=c=>`background:linear-gradient(115deg,${c[0]} 0 58%,${c[1]} 58% 100%)`;
-const slides=[
- {h:"Top up game cepat dan murah",p:"Semua metode bayar: QRIS, e-wallet, bank.",c:["#16306B","#1F4BA3"]},
- {h:"Nokos siap pakai untuk verifikasi",p:"Nomor kosong, proses lewat admin Satria Store.",c:["#0F3D4A","#146B75"]},
- {h:"Jasa amankan akun mulai Rp30rb",p:"Takut akun hilang? Amankan dulu di sini.",c:["#2B2A63","#4743B8"]},
- {h:"Rental akun mulai Rp50rb",p:"Coba akun sultan tanpa beli, sewa per jam.",c:["#4A1E2B","#8A2C3F"]}];
-/* =====================================================
-   TOP UP GAME (Free Fire, Mobile Legends, Roblox)
-   Format item: [jumlah, harga]. Harga 0 = tampil "Tanya harga".
-   Ubah angka harga di bawah sesuai harga tokomu, contoh: [50,7000]
-   Mau tambah/kurangi nominal? Tambah atau hapus baris [jumlah,harga].
-   ===================================================== */
-const mkN=(a,u,s)=>a.map(n=>[n,0,"",u,s]);          /* nominal biasa: [jumlah,harga,"",satuan,bagian] */
-const mkL=(a,s)=>a.map((n,i)=>[i+1,0,n,"",s]);        /* paket bernama: [urutan,harga,nama,"",bagian] */
-const SECO=["Diamond","Memberships","Cards & Passes"];  /* urutan bagian di popup */
-const TU=[
- {g:"Free Fire",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
-  items:[...mkN([5,12,50,70,140,355,720,1450,2180],"Diamond","Diamond"),
-   ...mkL(["Membership Mingguan","Membership Mingguan x2","Membership Mingguan x3","Membership Mingguan x4","Membership Mingguan x5","Membership Bulanan","Membership Bulanan x2","Membership Bulanan x3","Membership Bulanan x4","Membership Bulanan x5"],"Memberships"),
-   ...mkL(["BP Card"],"Cards & Passes")]},
- {g:"Mobile Legends",e:"💠",c:["#16306B","#1F4BA3"],need:"ID dan Zone ID Mobile Legends kamu",
-  items:mkN([86,172,257,344,429,514,706,878,1412],"Diamond","Diamond")},
- {g:"Roblox",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
-  items:mkN([80,400,800,1700,4500],"Robux","Robux")}];
-function tuCard(i){const x=TU[i];
- return `<button class="c" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.e}</div>
- <div class="ci"><span class="g">Top up</span><span class="t">${esc(x.g)}</span><span class="sv">${x.items.length} pilihan</span><span class="p pk" style="margin-top:auto">Pilih paket</span></div></button>`}
-function drawTU(){const h=TU.length?TU.map((_,i)=>tuCard(i)).join(""):`<p class="sub" style="grid-column:1/-1">Top up segera hadir.</p>`;
- $("sTopup").hidden=!TU.length;
- ["rTopup","lt"].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML=h;el.querySelectorAll("[data-tu]").forEach(b=>b.onclick=()=>openTU(+b.dataset.tu))})}
-/* Saat Supabase aktif, daftar top up diambil dari tabel "topups" (diatur lewat tab Top Up di admin.html).
-   Kalau tabel belum dibuat / gagal dimuat, daftar bawaan di atas tetap dipakai. */
-const TUM={};TU.forEach(x=>TUM[x.g.toLowerCase()]=x);
-async function loadTopups(){if(!LIVE)return;
- const {data,error}=await sb.from("topups").select("game,unit,amount,price,label,section").eq("active",true).order("sort").order("amount");
- if(error||!data)return;
- const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]],m=new Map();
- data.forEach(d=>{const k=d.game;
-  if(!m.has(k)){const st=TUM[k.toLowerCase()]||{e:"⚡",c:pal[m.size%pal.length],need:"ID akun game kamu"};m.set(k,{g:k,e:st.e,c:st.c,need:st.need,items:[]})}
-  m.get(k).items.push([d.amount,d.price,d.label,d.unit||"",d.section||(d.label?"Paket":(d.unit||"Nominal"))])});
- TU.length=0;TU.push(...m.values());drawTU()}
-function openTU(i){const x=TU[i],secs=[];
- x.items.forEach(it=>{let s=secs.find(z=>z.n===it[4]);if(!s)secs.push(s={n:it[4],l:[]});s.l.push(it)});
- secs.sort((a,b)=>{const p=SECO.indexOf(a.n),q=SECO.indexOf(b.n);return (p<0?99:p)-(q<0?99:q)});
- const opt=([a,pr,lb,u])=>{const n=lb||(a.toLocaleString("id-ID")+" "+u),m=encodeURIComponent("Halo admin Satria Store, saya mau "+(lb?"beli "+lb+" ("+x.g+")":"top up "+x.g+" "+n)+".");
-  return `<a class="opt" target="_blank" rel="noopener" href="${WA}?text=${m}"><span>${esc(n)}</span><span class="${pr?"p":"sub"}" style="font-size:${pr?16:13}px">${pr?rp(pr):"Tanya harga"}</span></a>`};
- $("db").innerHTML=`<div class="dc" style="${bg(x.c)}" aria-hidden="true">${x.e}</div><span class="g">Top up</span><h3 style="font-size:21px">${esc(x.g)}</h3>
- <p class="sub">Siapkan ${esc(x.need)}. Pilih paket, lalu lanjut ke WhatsApp admin untuk pembayaran.</p>
- ${secs.map(z=>(secs.length>1?`<h3 style="font-size:16px;margin:10px 0 0;color:var(--acc)">${esc(z.n)}</h3>`:"")+`<div class="opts">${z.l.map(opt).join("")}</div>`).join("")}
- <button class="bt al" id="cl">Tutup</button>`;
- $("cl").onclick=()=>$("dlg").close();$("dlg").showModal()}
-/* Data contoh untuk MODE DEMO. Saat Supabase aktif, semua ini dikosongkan dan diganti data dari admin. */
-const P=[
- {g:"Arena Legenda",t:"STOK AKUN JURAGAN 31",s:"Seller Satu",o:2700000,p:2500000,d:7,e:"👑",c:["#16306B","#1F4BA3"]},
- {g:"Arena Legenda",t:"STOK AKUN PRIBADI ALL SKIN",s:"Seller Satu",o:2500000,p:2200000,d:12,e:"🗡️",c:["#2B2A63","#4743B8"]},
- {g:"Tembak Rimba",t:"STOK PRIBADI TOKO DUA 21",s:"Toko Dua",o:1300000,p:950000,d:27,e:"🔫",c:["#3D2A0C","#7A5214"]}];
-const F=[
- {g:"Tembak Rimba",t:"STOK PRIBADI BUDI JABAR",s:"Budi Jabar",o:3000000,p:1200000,d:60,e:"🎯",c:["#4A1E2B","#8A2C3F"]},
- {g:"Tembak Rimba",t:"STOK PRIBADI BUDI JABAR 2",s:"Budi Jabar",o:2000000,p:850000,d:57,e:"🔥",c:["#0F3D4A","#146B75"]}];
-const N=[
- {g:"Nokos",t:"NOKOS WHATSAPP INDONESIA",s:"Admin Satria",p:3500,e:"📲",c:["#0F3D4A","#146B75"]},
- {g:"Nokos",t:"NOKOS TELEGRAM INDONESIA",s:"Admin Satria",p:2500,e:"✈️",c:["#16306B","#1F4BA3"]}];
-const R=[{t:"RENTAL TR 001",s:"Admin Satria",p:65000,e:"🎮",c:["#2B2A63","#4743B8"]},{t:"RENTAL TR 004",s:"Admin Satria",p:50000,e:"🕹️",c:["#4A1E2B","#8A2C3F"]}];
-/* Partner: sengaja kosong. Tambah dari admin (kategori Partner); section otomatis muncul kalau ada isinya. */
-const PT=[];
-if(LIVE){P.length=F.length=N.length=R.length=0}
-const LAB={r:"Rental",t:"Partner resmi",n:"Nokos"};
-const all=[];
-function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
- return `<button class="c" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}</div>
- <div class="ci"><span class="g">${LAB[k]||x.g||""}</span><span class="t">${x.t}</span><span class="sv">${x.s}</span>
- ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
-$("sl").innerHTML=slides.map(s=>`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
-$("dots").innerHTML=slides.map(()=>"<i></i>").join("");
-$("info").innerHTML=slides.slice(0,3).map(s=>`<div class="c" style="width:240px;min-height:150px;${bg(s.c)};padding:16px;justify-content:center;color:#fff"><b style="font-size:17px;font-family:var(--d)">${s.h}</b><span style="font-size:13px;margin-top:6px">${s.p}</span></div>`).join("");
-function openItem(b){const x=all[+b.dataset.i];show({x,k:x.k})}
-function fill(){const q=$("q").value.toLowerCase();
- const f=a=>a.filter(x=>(x.t+(x.g||"")).toLowerCase().includes(q));
- const sets=[["sStok","rStok",P,"p"],["flash","rFlash",F,"f"],["sNokos","rNokos",N,"n"],["layanan","rRent",R,"r"],["partner","rPart",PT,"t"]];
- let shown=0;
- sets.forEach(([sec,row,arr,k])=>{const l=f(arr);$(row).innerHTML=l.map(x=>card(x,k)).join("");$(sec).hidden=!l.length;if(l.length&&k!=="t")shown++});
- $("empty").hidden=shown>0;$("empty").textContent=q?"Tidak ada hasil. Coba kata kunci lain.":"Produk segera hadir.";
- document.querySelectorAll("#v-home .c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
-function show({x,k}){
- const msg=encodeURIComponent("Halo admin Satria Store, saya mau tanya "+x.t);
- const imgs=x.imgs&&x.imgs.length?x.imgs:(x.img?[x.img]:[]);
- $("db").innerHTML=`${imgs.length?`<div class="gal"><div class="gs" id="gs">${imgs.map((u,i)=>`<img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy">`).join("")}</div>${imgs.length>1?`<span class="gn" id="gn">1/${imgs.length}</span><button class="ga l" id="gp" aria-label="Foto sebelumnya">‹</button><button class="ga r" id="gx" aria-label="Foto berikutnya">›</button>`:""}</div>`:`<div class="dc" style="${bg(x.c)}">${x.e}</div>`}<span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
- ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:26px">${rp(x.p)}</b></p>`:""}
- <a class="bt" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a><button class="bt al" id="cl">Tutup</button>`;
- $("cl").onclick=()=>$("dlg").close();
- const gs=$("gs");
- if(gs&&imgs.length>1){
-  gs.onscroll=()=>{$("gn").textContent=(Math.round(gs.scrollLeft/gs.clientWidth)+1)+"/"+imgs.length};
-  $("gp").onclick=()=>gs.scrollBy({left:-gs.clientWidth,behavior:"smooth"});
-  $("gx").onclick=()=>gs.scrollBy({left:gs.clientWidth,behavior:"smooth"});
- }
+const CATN={p:"Stok Akun",f:"Flash Sale",n:"Nokos",r:"Rental",t:"Partner"};
+const CATE={p:"🛍️",f:"⚡",n:"📱",r:"💼",t:"🤝"};
+const MAXI=7;
+let tab="produk",pf="all",rf="wait",PR=[],RE=[],TP=[],tpErr="",imgs=[];
+const imgsOf=p=>Array.isArray(p.images)&&p.images.length?p.images:(p.image_url?[p.image_url]:[]);
+const ready=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
+const sb=ready?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+const say=h=>{$("app").innerHTML=h};
+const brand=`<div class="top"><div class="mk" aria-hidden="true">SS</div><div><div class="ttl">Satria Store</div><div class="mu sm">Panel admin</div></div>`;
+
+function loginView(msg=""){
+ say(`${brand}</div><section class="pn"><h1>Masuk admin</h1><p class="mu">Pakai akun admin Supabase.</p>
+ <form id="lf"><label class="fl" for="em">Email</label><input class="fi" id="em" type="email" autocomplete="username">
+ <label class="fl" for="pw">Password</label><input class="fi" id="pw" type="password" autocomplete="current-password">
+ <button class="pb" style="width:100%;margin-top:18px">Masuk</button></form><p class="msg" id="lm" role="status">${esc(msg)}</p></section>`);
+ $("lf").onsubmit=async e=>{e.preventDefault();$("lm").textContent="Memeriksa…";
+  const {error}=await sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
+  if(error)return $("lm").textContent="Gagal masuk: "+error.message;
+  gate()}}
+async function gate(){
+ const {data:u}=await sb.auth.getUser();const uid=u&&u.user?u.user.id:"";
+ const {data,error}=await sb.from("admins").select("user_id").eq("user_id",uid).limit(1);
+ if(error||!data||!data.length){await sb.auth.signOut();return loginView(error?"Gagal cek admin: "+error.message:"Akun ini bukan admin (UID: "+uid+")")}
+ await load();panel()}
+async function load(){
+ const [a,b,c]=await Promise.all([
+  sb.from("products").select("*").order("id",{ascending:false}),
+  sb.from("reports").select("*").order("id",{ascending:false}),
+  sb.from("topups").select("*").order("sort").order("game").order("amount")]);
+ PR=a.data||[];RE=b.data||[];TP=c.data||[];tpErr=c.error?c.error.message:""}
+
+function panel(){
+ const nw=RE.filter(r=>r.status==="wait").length,na=RE.filter(r=>r.status==="ok").length;
+ say(`${brand}<button class="ob" id="out">Keluar</button></div>
+ <div class="stats"><div><b>${PR.length}</b>Produk</div><div><b>${nw}</b>Laporan menunggu</div><div><b>${na}</b>Laporan disetujui</div></div>
+ <div class="tabs"><button class="tab" data-t="produk" aria-pressed="${tab==="produk"}">Produk</button><button class="tab" data-t="topup" aria-pressed="${tab==="topup"}">Top Up</button><button class="tab" data-t="laporan" aria-pressed="${tab==="laporan"}">Laporan${nw?` (${nw})`:""}</button></div><div id="body"></div>`);
+ $("out").onclick=async()=>{await sb.auth.signOut();loginView()};
+ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;panel()});
+ tab==="produk"?prodView():tab==="topup"?tuView():repView()}
+
+function prodView(){
+ const cats=[["all","Semua",PR.length],...Object.entries(CATN).map(([k,n])=>[k,n,PR.filter(p=>p.category===k).length])];
+ const list=PR.filter(p=>pf==="all"||p.category===pf);
+ $("body").innerHTML=`<button class="pb" id="add" style="width:100%;margin:14px 0 0">+ Tambah produk</button>
+ <div class="chips">${cats.map(([k,n,c])=>`<button class="chip" data-pf="${k}" aria-pressed="${pf===k}">${n} (${c})</button>`).join("")}</div>`+
+ (list.map(p=>{const im=imgsOf(p);return `<div class="it">${im[0]?`<img class="th" src="${esc(im[0])}" alt="">`:`<div class="th" aria-hidden="true">${CATE[p.category]||"🎮"}</div>`}
+  <div class="in"><b>${esc(p.title)}</b><span class="mu sm"><span class="tg">${CATN[p.category]||"-"}</span> ${esc(p.game||"")}${im.length>1?` · ${im.length} foto`:""}${p.active?"":" · disembunyikan"}</span><span class="pr">${p.category==="t"?"Partner":rp(p.price)}${p.old_price?` <s>${rp(p.old_price)}</s>`:""}</span></div>
+  <div class="ac"><button class="ob" data-e="${p.id}">Edit</button><button class="ob dg" data-d="${p.id}">Hapus</button></div></div>`}).join("")||`<p class="mu" style="margin-top:14px">Belum ada produk di kategori ini.</p>`);
+ $("add").onclick=()=>form(pf!=="all"?{category:pf,active:true}:null);
+ $("body").querySelectorAll("[data-pf]").forEach(b=>b.onclick=()=>{pf=b.dataset.pf;prodView()});
+ $("body").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>form(PR.find(p=>p.id==b.dataset.e)));
+ $("body").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
+  const p=PR.find(x=>x.id==b.dataset.d);
+  if(!confirm("Hapus produk ini?"))return;
+  const {error}=await sb.from("products").delete().eq("id",b.dataset.d);
+  if(error)return alert("Gagal: "+error.message);
+  const paths=imgsOf(p).map(u=>u.split("/produk/")[1]).filter(Boolean);
+  if(paths.length)sb.storage.from("produk").remove(paths).catch(()=>{});
+  await load();panel()})}
+
+function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{const k=Math.min(1,1000/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(ok,"image/jpeg",.82)};
+ im.onerror=()=>{URL.revokeObjectURL(u);no(new Error("File bukan gambar"))};im.src=u})}
+
+function drawImgs(){const g=$("ig");if(!g)return;
+ g.innerHTML=imgs.map((m,i)=>`<div class="ph${i?"":" cv"}"><img src="${esc(m.u)}" alt="Foto ${i+1}">${i?`<button type="button" class="st" data-c="${i}" aria-label="Jadikan sampul">★</button>`:`<span class="cvb">Sampul</span>`}<button type="button" class="rm" data-r="${i}" aria-label="Hapus foto ${i+1}">✕</button></div>`).join("");
+ $("ic").textContent=imgs.length+"/"+MAXI+" foto";
+ g.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{const m=imgs[+b.dataset.r];if(!m.old)URL.revokeObjectURL(m.u);imgs.splice(+b.dataset.r,1);drawImgs()});
+ g.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const [m]=imgs.splice(+b.dataset.c,1);imgs.unshift(m);drawImgs()})}
+
+function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
+ imgs=imgsOf(p).map(u=>({u,old:true}));
+ const LG={n:"Jenis nokos (mis. WhatsApp, Telegram)",t:"Keterangan partner (opsional)"};
+ $("db").innerHTML=`<h3>${p.id?"Edit":"Tambah"} produk</h3>
+ <label class="fl" for="f_c">Kategori</label><select class="fi" id="f_c">${Object.entries(CATN).map(([k,n])=>`<option value="${k}"${p.category===k?" selected":""}>${n}</option>`).join("")}</select>
+ <label class="fl" for="f_t">Judul</label><input class="fi" id="f_t" maxlength="80" value="${v("title")}">
+ <label class="fl" for="f_g" id="lg">Game</label><input class="fi" id="f_g" maxlength="40" value="${v("game")}">
+ <label class="fl" for="f_s">Penjual</label><input class="fi" id="f_s" maxlength="40" value="${v("seller")}" placeholder="Satria Store">
+ <label class="fl" for="f_p">Harga (Rp)</label><input class="fi" id="f_p" type="number" min="0" inputmode="numeric" value="${v("price")}">
+ <label class="fl" for="f_o">Harga coret (opsional)</label><input class="fi" id="f_o" type="number" min="0" inputmode="numeric" value="${v("old_price")}">
+ <label class="fl" for="f_d">Deskripsi</label><textarea class="fi" id="f_d" maxlength="600">${v("description")}</textarea>
+ <label class="fl" for="f_i">Foto (maksimal ${MAXI})</label><input class="fi" id="f_i" type="file" accept="image/*" multiple>
+ <p class="mu sm" style="margin:6px 0 0">Foto pertama jadi sampul. Tekan ★ untuk menjadikan foto lain sampul. <b id="ic">0/${MAXI} foto</b></p>
+ <div class="ig" id="ig"></div>
+ <label class="ck"><input type="checkbox" id="f_a"${p.active?" checked":""}> Tampilkan di toko</label>
+ <p class="msg" id="fm" role="status"></p><button class="pb" id="sv">Simpan</button><button class="ob" id="cx">Batal</button>`;
+ const lab=()=>{$("lg").textContent=LG[$("f_c").value]||"Game";$("f_p").placeholder=$("f_c").value==="t"?"Boleh kosong":""};lab();$("f_c").onchange=lab;
+ drawImgs();
+ const close=()=>{imgs.forEach(m=>{if(!m.old)URL.revokeObjectURL(m.u)});imgs=[];$("dlg").close()};
+ $("cx").onclick=close;
+ $("f_i").onchange=()=>{const fm=$("fm");fm.textContent="";
+  for(const f of $("f_i").files){
+   if(imgs.length>=MAXI){fm.textContent="Maksimal "+MAXI+" foto.";break}
+   if(!f.type.startsWith("image/")){fm.textContent="Hanya file gambar yang bisa diunggah.";continue}
+   imgs.push({f,u:URL.createObjectURL(f)})}
+  $("f_i").value="";drawImgs()};
+ $("sv").onclick=async()=>{const fm=$("fm"),t=$("f_t").value.trim(),cat=$("f_c").value;
+  const pr=$("f_p").value===""&&cat==="t"?0:parseInt($("f_p").value,10);
+  if(!t||isNaN(pr)||pr<0)return fm.textContent="Judul dan harga wajib diisi.";
+  $("sv").disabled=true;
+  try{
+   const urls=[];
+   for(let i=0;i<imgs.length;i++){const m=imgs[i];
+    if(m.old){urls.push(m.u);continue}
+    fm.textContent="Mengunggah foto "+(i+1)+"/"+imgs.length+"…";
+    const blob=await shrink(m.f),path=`p-${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+    const up=await sb.storage.from("produk").upload(path,blob,{contentType:"image/jpeg"});if(up.error)throw up.error;
+    urls.push(sb.storage.from("produk").getPublicUrl(path).data.publicUrl)}
+   fm.textContent="Menyimpan…";
+   const row={title:t,game:$("f_g").value.trim()||null,category:cat,seller:$("f_s").value.trim()||null,price:pr,
+    old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,images:urls,image_url:urls[0]||null,active:$("f_a").checked};
+   const r=p.id?await sb.from("products").update(row).eq("id",p.id):await sb.from("products").insert(row);if(r.error)throw r.error;
+   close();await load();panel()
+  }catch(e){fm.textContent="Gagal: "+e.message;$("sv").disabled=false}};
  $("dlg").showModal()}
-$("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
-fill();drawTU();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
-// banner
-let n=0;const go=i=>{n=(i+slides.length)%slides.length;$("sl").style.transform=`translateX(-${n*100}%)`;[...$("dots").children].forEach((d,j)=>d.className=j===n?"on":"")};go(0);
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches)setInterval(()=>go(n+1),4500);
-$("tx").onclick=()=>$("tick").remove();
-// tema
-const th=$("th"),root=document.documentElement;
-const curTheme=()=>root.dataset.theme||(matchMedia("(prefers-color-scheme:light)").matches?"light":"dark");
-const setTheme=t=>{root.dataset.theme=t;th.textContent=t==="dark"?"🌙":"☀️"};
-try{const sv=localStorage.getItem("satria-theme");if(sv)root.dataset.theme=sv}catch(e){}
-th.textContent=curTheme()==="dark"?"🌙":"☀️";
-th.onclick=()=>{const t=curTheme()==="dark"?"light":"dark";setTheme(t);try{localStorage.setItem("satria-theme",t)}catch(e){}};
-// data contoh laporan (nomor di bawah ini sengaja nomor palsu)
-const REP=[
- {id:22,t:"Penipuan, akun tidak dikirim",wa:"6281200000001",gid:"123456789",at:"10/10/2026, 20.15.02",s:"ok"},
- {id:20,t:"Clone akun setelah transaksi",wa:"6281200000002",gid:"",at:"22/9/2026, 15.30.41",s:"ok"},
- {id:15,t:"Penipuan top up palsu",wa:"6281200000003",gid:"",at:"16/9/2026, 16.23.14",s:"ok"},
- {id:12,t:"Akun diambil kembali penjual",wa:"6281200000004",gid:"987654321",at:"9/9/2026, 19.21.20",s:"ok"},
- {id:7,t:"Ditipu senilai Rp330.000",wa:"6281200000005",gid:"",at:"9/9/2026, 06.51.29",s:"ok"},
- {id:6,t:"Ngerip akun",wa:"6281200000006",gid:"",at:"8/9/2026, 02.48.53",s:"ok"},
- {id:23,t:"Barang tidak dikirim setelah transfer",wa:"6281200000007",gid:"",k:"Sudah transfer, lalu diblokir.",at:"11/10/2026, 17.40.10",s:"wait"}];
-const badge=r=>`<div class="bd"><span class="${r.s==="ok"?"ok":"wait"}">${r.s==="ok"?"Disetujui":"Menunggu"}</span><span class="bad">Pengguna bermasalah</span></div>`;
-function drawRep(){
- const q=$("rq").value.trim().toLowerCase(),d=nm(q);
- const l=REP.filter(r=>r.s==="ok"&&(!q||r.t.toLowerCase().includes(q)||(d.length>3&&r.wa.includes(d))||(r.gid&&r.gid.includes(q)))).sort((a,b)=>b.id-a.id);
- const ok=REP.filter(r=>r.s==="ok"),g=new Set(ok.flatMap(r=>r.gid?r.gid.split(","):[])).size,w=new Set(ok.flatMap(r=>r.wa.split(","))).size;
- $("sT").textContent=ok.length;$("sG").textContent=g;$("sW").textContent=w;
- $("rsum").textContent=`${g} ID game dan ${w} nomor WA ditemukan.`;
- $("rl").innerHTML=l.length?l.map(r=>`<button class="rp" data-id="${r.id}"><div class="scam" aria-hidden="true"><span>SCAM</span></div><div style="min-width:0;flex:1">${badge(r)}<div style="font-weight:800;font-size:17px;margin-top:6px"><span style="color:var(--acc)">#${r.id}</span> ${esc(r.t)}</div><div class="wa">No WA pelaku: <b>${fmt(r.wa)}</b></div><div class="tm">🕒 ${esc(r.at)}${(r.proofs||[]).length?" · 📎 "+r.proofs.length+" foto":""}</div></div></button>`).join("")
-  :`<p class="sub" style="margin-top:14px">Belum ada laporan yang cocok. Belum pernah dilaporkan bukan berarti aman, tetap hati-hati saat bertransaksi.</p>`;
- $("rl").querySelectorAll(".rp").forEach(b=>b.onclick=()=>repDetail(+b.dataset.id));
-}
-function repDetail(id){const r=REP.find(x=>x.id===id);
- $("db").innerHTML=`<div class="scam" style="width:100%;height:110px" aria-hidden="true"><span style="font-size:30px">SCAM</span></div>${badge(r)}<h3 style="font-size:20px"><span style="color:var(--acc)">#${r.id}</span> ${esc(r.t)}</h3><p class="wa">No WA pelaku: <b>${fmt(r.wa)}</b></p>${r.gid?`<p class="wa">ID game: <b>${fmt(r.gid)}</b></p>`:""}${r.k?`<p class="sub">${esc(r.k)}</p>`:""}<p class="tm">🕒 ${esc(r.at)}</p>${r.s==="ok"&&(r.proofs||[]).length?`<div><b>Foto bukti</b><div class="pvs" id="rpf"><p class="tm">Memuat foto…</p></div></div>`:""}<button class="bt al" id="cl">Tutup</button>`;
- $("cl").onclick=()=>$("dlg").close();$("dlg").showModal();
- if(LIVE&&r.s==="ok"&&(r.proofs||[]).length)sb.storage.from("bukti").createSignedUrls(r.proofs,3600).then(({data})=>{const g=$("rpf");if(!g)return;
-  const l=(data||[]).filter(x=>x.signedUrl);
-  g.innerHTML=l.length?l.map((x,i)=>`<a class="th" href="${x.signedUrl}" target="_blank" rel="noopener" aria-label="Buka foto bukti ${i+1}"><img src="${x.signedUrl}" alt="Foto bukti ${i+1}" loading="lazy"></a>`).join(""):`<p class="tm">Foto bukti belum bisa dimuat.</p>`})}
-// kecilkan foto bukti (maks 1280px, JPEG) supaya upload ringan
-async function shrink(file){
- const url=URL.createObjectURL(file);
- try{
-  const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=url});
-  const s=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement("canvas");
-  c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);
-  const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
-  return await new Promise(r=>c.toBlob(r,"image/jpeg",.82));
- }finally{URL.revokeObjectURL(url)}}
-let pics=[];
-function drawPics(){const b=$("pvs");if(!b)return;
- b.innerHTML=pics.map((p,i)=>`<div class="th"><img src="${p.u}" alt="Foto bukti ${i+1}"><button type="button" data-x="${i}" aria-label="Hapus foto ${i+1}">✕</button></div>`).join("");
- b.querySelectorAll("[data-x]").forEach(x=>x.onclick=()=>{URL.revokeObjectURL(pics[+x.dataset.x].u);pics.splice(+x.dataset.x,1);drawPics()});
- $("pc").textContent=pics.length+"/5 foto"}
-$("rn").onclick=()=>{
- pics=[];
- $("db").innerHTML=`<h3 style="font-size:21px">Buat laporan</h3><p class="sub">Nama dan kontak kamu tidak ditampilkan ke publik. Foto bukti tampil di publik setelah laporan disetujui admin, jadi tutup nama, nomor, atau data pribadimu di foto sebelum diunggah.</p>
- <label class="fl" for="f1">Judul laporan</label><input class="fi" id="f1" maxlength="80" placeholder="Contoh: akun tidak dikirim">
- <label class="fl" for="f2">No WA pelaku</label><input class="fi" id="f2" placeholder="08xxxxxxxxxx, 08xxxxxxxxxx">
- <p class="note">Kalau pelaku punya lebih dari satu nomor, pisahkan dengan koma.</p>
- <label class="fl" for="f3">ID game pelaku (opsional)</label><input class="fi" id="f3" maxlength="200" placeholder="123456789, 987654321">
- <p class="note">Kalau pelaku punya lebih dari satu akun, pisahkan dengan koma.</p>
- <label class="fl" for="f4">Kronologi</label><textarea class="fi" id="f4" maxlength="500"></textarea>
- <label class="fl" for="f5">Foto bukti (wajib)</label><input class="fi" id="f5" type="file" multiple accept="image/jpeg,image/png,image/webp">
- <p class="note">Boleh lebih dari satu, maksimal 5 foto. JPG, PNG, atau WebP, maksimal 10 MB per foto. <span id="pc">0/5 foto</span></p>
- <div class="pvs" id="pvs"></div>
- <p class="msg" id="fm" role="status"></p><button class="pb" id="fs">Kirim laporan</button><button class="bt al" id="cl">Batal</button>`;
- $("cl").onclick=()=>{pics.forEach(p=>URL.revokeObjectURL(p.u));pics=[];$("dlg").close()};
- $("f5").onchange=()=>{const m=$("fm");m.textContent="";
-  for(const f of $("f5").files){
-   if(pics.length>=5){m.textContent="Maksimal 5 foto.";break}
-   if(!/^image\/(jpeg|png|webp)$/.test(f.type)){m.textContent="File harus berupa foto JPG, PNG, atau WebP.";continue}
-   if(f.size>10*1024*1024){m.textContent="Foto terlalu besar. Maksimal 10 MB per foto.";continue}
-   pics.push({f,u:URL.createObjectURL(f)})}
-  $("f5").value="";drawPics()};
- $("fs").onclick=async()=>{const t=$("f1").value.trim(),wl=wlist($("f2").value),gl=ilist($("f3").value),m=$("fm"),btn=$("fs");
-  if(!t||!wl.length){m.textContent="Isi judul dan minimal satu nomor WA pelaku yang benar (minimal 10 digit).";return}
-  if(!pics.length){m.textContent="Foto bukti wajib dilampirkan (minimal 1 foto).";return}
-  btn.disabled=true;m.textContent="";
-  const fail=txt=>{m.textContent=txt;btn.disabled=false;btn.textContent="Kirim laporan"};
-  const paths=[];
-  for(let i=0;i<pics.length;i++){
-   btn.textContent="Mengirim foto "+(i+1)+"/"+pics.length+"…";
-   let blob;try{blob=await shrink(pics[i].f)}catch(e){blob=null}
-   if(!blob)return fail("Foto "+(i+1)+" tidak bisa dibaca. Hapus lalu coba foto lain.");
-   if(LIVE){
-    const path=Date.now()+"-"+(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2))+".jpg";
-    const up=await sb.storage.from("bukti").upload(path,blob,{contentType:"image/jpeg"});
-    if(up.error)return fail("Gagal upload foto "+(i+1)+": "+up.error.message);
-    paths.push(path)}}
-  btn.textContent="Mengirim…";
-  if(LIVE){
-   const {error}=await sb.from("reports").insert({title:t,wa:wl.join(","),game_id:gl.join(",")||null,story:$("f4").value.trim()||null,proof_paths:paths});
-   if(error)return fail("Gagal kirim: "+error.message);
-  }else REP.push({id:Math.max(...REP.map(x=>x.id))+1,t,wa:wl.join(","),gid:gl.join(","),k:$("f4").value.trim(),at:new Date().toLocaleString("id-ID"),s:"wait",proofs:[]});
-  pics.forEach(p=>URL.revokeObjectURL(p.u));pics=[];
-  $("db").innerHTML=`<h3 style="font-size:21px">Laporan terkirim</h3><p class="sub">Laporan dan foto bukti kamu masuk antrean. Laporan dan foto tampil di daftar publik setelah disetujui admin.</p><button class="bt al" id="cl2">Tutup</button>`;$("cl2").onclick=()=>$("dlg").close();drawRep()};
- $("dlg").showModal()};
-$("rq").oninput=drawRep;$("rs").onclick=drawRep;$("rr").onclick=async()=>{await loadRep();drawRep()};
-// ambil produk dari Supabase (diisi lewat admin.html)
-// kategori di tabel products: p=stok akun, f=flash sale, r=rental, n=nokos, t=partner
-async function loadProducts(){if(!LIVE)return;
- const {data,error}=await sb.from("products").select("*").eq("active",true).order("id",{ascending:false});
- if(error||!data)return;
- const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]];
- const em={p:"🎮",f:"🔥",r:"🕹️",n:"📲",t:"🤝"};
- P.length=F.length=N.length=R.length=PT.length=0;
- data.forEach(d=>{const k=["f","r","n","t"].includes(d.category)?d.category:"p";
-  let im=d.images;if(typeof im==="string"){try{im=JSON.parse(im)}catch(e){im=[]}}
-  im=Array.isArray(im)?im.filter(Boolean):[];
-  if(!im.length&&d.image_url)im=[d.image_url];
-  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||"")};
-  ({p:P,f:F,r:R,n:N,t:PT})[k].push(x)});
- buildCat();fill();route()}
-// ambil laporan dari Supabase (foto bukti sengaja tidak diambil, hanya admin yang melihat)
-async function loadRep(){if(!LIVE)return;
- const {data,error}=await sb.from("reports").select("id,title,wa,game_id,story,created_at,status,proof_paths").order("id",{ascending:false});
- if(error)return;REP.length=0;
- data.forEach(d=>REP.push({id:d.id,t:d.title,wa:d.wa,gid:d.game_id||"",k:d.story||"",at:new Date(d.created_at).toLocaleString("id-ID"),s:d.status,proofs:d.proof_paths||[]}))}
-// halaman produk
-const CAT=[];function buildCat(){CAT.length=0;CAT.push(...P.map(x=>[x,"p"]),...F.map(x=>[x,"f"]),...N.map(x=>[x,"n"]),...R.map(x=>[x,"r"]))}buildCat();
-const KL={"Semua":"","Stok akun":"p","Flash sale":"f","Nokos":"n","Rental":"r"},PS={k:"Semua",g:"Semua",s:"def"};
-document.querySelectorAll("[data-f]").forEach(a=>a.addEventListener("click",()=>{PS.k=a.dataset.f;PS.g="Semua"}));
-function drawProduk(){
- const q=$("q").value.trim().toLowerCase(),games=["Semua",...new Set([...P,...F].map(x=>x.g).filter(Boolean))];
- const ch=(list,key)=>`<div class="chips">${list.map(v=>`<button class="chip" data-k="${key}" data-v="${esc(v)}" aria-pressed="${PS[key]===v}">${esc(v)}</button>`).join("")}</div>`;
- $("pf").innerHTML=ch(Object.keys(KL),"k")+ch(games,"g")+`<select class="fi" id="ps" style="margin-top:12px" aria-label="Urutkan"><option value="def">Urutan awal</option><option value="low">Harga terendah</option><option value="high">Harga tertinggi</option></select>`;
- $("ps").value=PS.s;$("ps").onchange=e=>{PS.s=e.target.value;drawProduk()};
- $("pf").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{PS[b.dataset.k]=b.dataset.v;drawProduk()});
- const l=CAT.filter(([x,k])=>(!KL[PS.k]||k===KL[PS.k])&&(PS.g==="Semua"||x.g===PS.g)&&(x.t+(x.g||"")).toLowerCase().includes(q));
- if(PS.s!=="def")l.sort((a,b)=>PS.s==="low"?a[0].p-b[0].p:b[0].p-a[0].p);
- $("pg").innerHTML=l.length?l.map(([x,k])=>card(x,k)).join(""):`<p class="sub" style="grid-column:1/-1">Tidak ada produk yang cocok. Coba ganti kata kunci atau filter.</p>`;
- $("pg").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
-// halaman layanan
-const SV=[
- {e:"⚡",t:"Top Up All Game",d:"Diamond Free Fire, diamond Mobile Legends, Robux Roblox, dan game lain. Proses cepat setelah bayar.",c:["#16306B","#1F4BA3"],h:"#/layanan",b:"Pilih game"},
- {e:"📲",t:"Nokos (Nomor Kosong)",d:"Nomor virtual untuk verifikasi akun. Lihat stok terbaru di halaman Produk.",c:["#0F3D4A","#146B75"],h:"#/produk",f:"Nokos",b:"Lihat stok"},
- {e:"🛡️",t:"Jasa Amankan Akun",d:"Ikat akun ke email atau Google kamu supaya tidak diambil orang. Mulai Rp30.000.",c:["#2B2A63","#4743B8"]},
- {e:"🔎",t:"Cek Keaslian Akun & Penjual",d:"Cari nomor WA atau ID game di daftar laporan.",c:["#4A1E2B","#8A2C3F"],h:"#/laporan",b:"Buka"}];
-function drawLayanan(){
- $("lv").innerHTML=SV.map(x=>`<div class="rp" style="align-items:center"><div class="scam" style="${bg(x.c)};font-size:34px" aria-hidden="true">${x.e}</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:17px">${esc(x.t)}</div><p class="sub" style="font-size:13px;margin:2px 0 8px">${esc(x.d)}</p><a class="chip" style="display:inline-block;background:var(--fill);border-color:var(--fill);color:var(--onf)" ${x.h?`href="${x.h}" ${x.f?`data-f="${x.f}"`:""}${x.h==="#/layanan"?` data-go="topup"`:""}`:`href="${WA}?text=${encodeURIComponent("Halo admin Satria Store, saya mau pesan "+x.t)}" target="_blank" rel="noopener"`}>${x.h?x.b:"Pesan via WA"}</a></div></div>`).join("");
- $("lv").querySelectorAll("[data-f]").forEach(a=>a.addEventListener("click",()=>{PS.k=a.dataset.f;PS.g="Semua"}));
- $("lv").querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();$("topup").scrollIntoView()}));
- $("lr").innerHTML=R.length?R.map(x=>card(x,"r")).join(""):`<p class="sub" style="grid-column:1/-1">Belum ada akun rental.</p>`;
- $("lr").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
-// router sederhana (hash) agar jalan di GitHub Pages
-const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),layanan:$("v-layanan")};
-function route(){const h=location.hash;
- let r=h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":"home";
- Object.entries(views).forEach(([k,v])=>v.hidden=k!==r);
- const t=$("tick");if(t)t.hidden=r!=="home";
- if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="layanan")drawLayanan();
- const k=r==="laporan"?3:r==="produk"?1:r==="layanan"?2:0;
- document.querySelectorAll(".bn a").forEach((a,i)=>a.classList.toggle("on",i===k));
- const id=h.startsWith("#/")?"":h.slice(1),el=id&&$(id);
- if(el&&r==="home")el.scrollIntoView();else if(!id)window.scrollTo(0,0)}
-if(LIVE)REP.length=0;addEventListener("hashchange",route);route();loadProducts();loadTopups();
+
+/* ===== TAB TOP UP: nominal dan harga top up (tabel "topups") ===== */
+function tuView(){
+ const tm=(t,ok)=>{const m=$("tm");if(m){m.textContent=t;m.style.color=ok?"var(--ok)":"var(--red)"}};
+ const games=[...new Set(TP.map(r=>r.game))],secs=[...new Set(TP.map(r=>r.section).filter(Boolean))];
+ const addForm=`<section class="pn" style="margin-top:14px"><h3>Tambah nominal top up</h3>
+ <p class="mu sm" style="margin:0">Harga 0 = tampil "Tanya harga" di toko. Menulis nama game baru otomatis membuat kartu game baru. Urutan game: angka kecil tampil lebih dulu.</p>
+ <label class="fl" for="n_g">Game</label><input class="fi" id="n_g" list="gl" maxlength="40" placeholder="Free Fire" autocomplete="off">
+ <datalist id="gl">${games.map(g=>`<option value="${esc(g)}">`).join("")}</datalist>
+ <label class="fl" for="n_u">Satuan</label><input class="fi" id="n_u" maxlength="20" placeholder="Diamond">
+ <label class="fl" for="n_l">Nama paket (opsional)</label><input class="fi" id="n_l" maxlength="50" placeholder="Membership Mingguan">
+ <p class="mu sm" style="margin:6px 0 0">Isi nama paket untuk item non-nominal (membership, pass, dll). Kalau diisi, satuan boleh kosong dan "Jumlah" dipakai sebagai nomor urutan di dalam game.</p>
+ <label class="fl" for="n_sc">Bagian (opsional)</label><input class="fi" id="n_sc" list="sl" maxlength="30" placeholder="Memberships" autocomplete="off">
+ <datalist id="sl">${secs.map(g=>`<option value="${esc(g)}">`).join("")}</datalist>
+ <p class="mu sm" style="margin:6px 0 0">Bagian = judul kelompok di dalam popup game, misalnya Diamond, Memberships, Cards &amp; Passes. Kosongkan untuk nominal biasa (otomatis memakai satuan).</p>
+ <label class="fl" for="n_a">Jumlah</label><input class="fi" id="n_a" type="number" min="1" inputmode="numeric" placeholder="70">
+ <label class="fl" for="n_p">Harga (Rp)</label><input class="fi" id="n_p" type="number" min="0" inputmode="numeric" placeholder="10000">
+ <label class="fl" for="n_s">Urutan game</label><input class="fi" id="n_s" type="number" inputmode="numeric" placeholder="1">
+ <p class="msg" id="tm" role="status"></p><button class="pb" id="n_add">Tambah</button></section>`;
+ let listHtml;
+ if(tpErr)listHtml=`<section class="pn"><h3>Tabel top up belum siap</h3><p class="mu">Jalankan file topups.sql di Supabase (SQL Editor) dulu, lalu muat ulang halaman ini.</p><p class="mu sm">Detail: ${esc(tpErr)}</p></section>`;
+ else if(!TP.length)listHtml=`<p class="mu" style="margin-top:14px">Belum ada nominal. Tambahkan lewat form di atas.</p>`;
+ else listHtml=games.map(g=>{const l=TP.filter(r=>r.game===g);
+  return `<div class="gh"><span>${esc(g)}</span><button class="ob dg" data-dg="${esc(g)}">Hapus game</button></div>`+
+  l.map(r=>`<div class="tr" data-id="${r.id}">
+   <div style="grid-column:1/-1"><label>Nama paket (kosongkan untuk nominal biasa)</label><input class="fi" maxlength="50" data-f="label" value="${esc(r.label||"")}"></div>
+   <div style="grid-column:1/-1"><label>Bagian (mis. Diamond, Memberships, Cards &amp; Passes)</label><input class="fi" maxlength="30" data-f="section" value="${esc(r.section||"")}"></div>
+   <div><label>Jumlah</label><input class="fi" type="number" min="1" inputmode="numeric" data-f="amount" value="${r.amount}"></div>
+   <div><label>Harga (Rp)</label><input class="fi" type="number" min="0" inputmode="numeric" data-f="price" value="${r.price}"></div>
+   <div><label>Urutan</label><input class="fi" type="number" inputmode="numeric" data-f="sort" value="${r.sort}"></div>
+   <div><label>Tampil</label><div class="ca"><input type="checkbox" data-f="active"${r.active?" checked":""} aria-label="Tampilkan di toko"></div></div>
+   <div class="ac"><button class="pb" data-s="${r.id}">Simpan</button><button class="ob dg" data-d="${r.id}">Hapus</button></div></div>`).join("")}).join("");
+ $("body").innerHTML=addForm+listHtml;
+ const refresh=async()=>{await load();tuView()};
+ $("n_g").oninput=()=>{const r=TP.find(x=>x.game.toLowerCase()===$("n_g").value.trim().toLowerCase());
+  if(r){if(!$("n_u").value)$("n_u").value=r.unit;if(!$("n_s").value)$("n_s").value=r.sort}};
+ $("n_add").onclick=async()=>{
+  const game=$("n_g").value.trim(),unit=$("n_u").value.trim(),label=$("n_l").value.trim(),section=$("n_sc").value.trim(),amount=parseInt($("n_a").value,10),price=parseInt($("n_p").value||"0",10),sort=parseInt($("n_s").value||"0",10);
+  if(!game||(!unit&&!label)||!(amount>0)||isNaN(price)||price<0||isNaN(sort))return tm("Isi game, satuan, jumlah (lebih dari 0), dan harga dengan benar.");
+  $("n_add").disabled=true;
+  const {data,error}=await sb.from("topups").insert({game,unit,amount,price,sort,label:label||null,section:section||null}).select();
+  $("n_add").disabled=false;
+  if(error)return tm("Gagal tambah: "+error.message);
+  if(!data||!data.length)return tm("Tidak tersimpan. Pastikan akun ini terdaftar di tabel admins.");
+  await refresh();tm("Ditambahkan.",true)};
+ $("body").querySelectorAll("[data-s]").forEach(b=>b.onclick=async()=>{
+  const el=b.closest(".tr"),f=k=>el.querySelector(`[data-f="${k}"]`);
+  const amount=parseInt(f("amount").value,10),price=parseInt(f("price").value||"0",10),sort=parseInt(f("sort").value||"0",10);
+  if(!(amount>0)||isNaN(price)||price<0||isNaN(sort))return tm("Jumlah harus lebih dari 0 dan harga tidak boleh minus.");
+  b.disabled=true;
+  const {data,error}=await sb.from("topups").update({amount,price,sort,label:f("label").value.trim()||null,section:f("section").value.trim()||null,active:f("active").checked}).eq("id",b.dataset.s).select();
+  b.disabled=false;
+  if(error)return tm("Gagal simpan: "+error.message);
+  if(!data||!data.length)return tm("Tidak tersimpan. Pastikan akun ini terdaftar di tabel admins.");
+  await refresh();tm("Tersimpan.",true)});
+ $("body").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
+  if(!confirm("Hapus nominal ini?"))return;
+  const {data,error}=await sb.from("topups").delete().eq("id",b.dataset.d).select();
+  if(error)return alert("Gagal: "+error.message);
+  if(!data||!data.length)return alert("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.");
+  await refresh()});
+ $("body").querySelectorAll("[data-dg]").forEach(b=>b.onclick=async()=>{
+  if(!confirm("Hapus SEMUA nominal "+b.dataset.dg+"?"))return;
+  const {data,error}=await sb.from("topups").delete().eq("game",b.dataset.dg).select();
+  if(error)return alert("Gagal: "+error.message);
+  if(!data||!data.length)return alert("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.");
+  await refresh()})}
+
+async function repView(){
+ const cnt=k=>k==="all"?RE.length:RE.filter(r=>r.status===k).length;
+ const list=RE.filter(r=>rf==="all"||r.status===rf);
+ $("body").innerHTML=`<div class="chips">${[["wait","Menunggu"],["ok","Disetujui"],["all","Semua"]].map(([k,n])=>`<button class="chip" data-rf="${k}" aria-pressed="${rf===k}">${n} (${cnt(k)})</button>`).join("")}</div>`+
+ (list.map(r=>{const ps=r.proof_paths||[];return `<div class="it" style="flex-direction:column;align-items:stretch">
+  <div><span class="tag ${r.status==="ok"?"ok":"wt"}">${r.status==="ok"?"DISETUJUI":"MENUNGGU"}</span> <b>#${r.id} ${esc(r.title)}</b></div>
+  <div class="mu">WA pelaku: ${fmt(r.wa)}${r.game_id?"<br>ID game: "+fmt(r.game_id):""}</div>
+  ${r.story?`<p class="mu" style="margin:4px 0">${esc(r.story)}</p>`:""}
+  <div class="mu sm">${r.created_at?new Date(r.created_at).toLocaleString("id-ID"):""}</div>
+  ${ps.length?`<div class="phs" data-rid="${r.id}"><span class="mu sm">Memuat foto…</span></div>`:r.proof_url?`<div class="phs"><a class="ph" href="${esc(r.proof_url)}" target="_blank" rel="noopener"><img src="${esc(r.proof_url)}" alt="Foto bukti"></a></div>`:`<p class="mu sm" style="margin:4px 0">Tanpa foto bukti.</p>`}
+  <div class="ac" style="margin-top:6px">${r.status==="wait"?`<button class="pb" data-a="ok" data-id="${r.id}">Setujui</button>`:""}<button class="ob dg" data-a="del" data-id="${r.id}">Hapus</button></div></div>`}).join("")||`<p class="mu" style="margin-top:14px">Tidak ada laporan di sini.</p>`);
+ $("body").querySelectorAll("[data-rf]").forEach(b=>b.onclick=()=>{rf=b.dataset.rf;repView()});
+ $("body").querySelectorAll("[data-a]").forEach(b=>b.onclick=async()=>{const id=b.dataset.id,r=RE.find(x=>x.id==id);let q;
+  if(b.dataset.a==="ok"){
+   if(!confirm("Setujui laporan ini? Laporan dan foto buktinya akan tampil di publik. Pastikan foto tidak memuat data pribadi pelapor."))return;
+   q=sb.from("reports").update({status:"ok"}).eq("id",id)}
+  else{if(!confirm("Hapus laporan ini beserta foto buktinya?"))return;q=sb.from("reports").delete().eq("id",id)}
+  const {error}=await q;if(error)return alert("Gagal: "+error.message);
+  if(b.dataset.a==="del"&&r&&(r.proof_paths||[]).length)sb.storage.from("bukti").remove(r.proof_paths).catch(()=>{});
+  await load();panel()});
+ const paths=[...new Set(list.flatMap(r=>r.proof_paths||[]))];
+ if(paths.length){
+  const {data}=await sb.storage.from("bukti").createSignedUrls(paths,3600);
+  const mp={};(data||[]).forEach(x=>{if(x.signedUrl)mp[x.path]=x.signedUrl});
+  list.forEach(r=>{const box=$("body")&&$("body").querySelector(`[data-rid="${r.id}"]`);if(!box)return;
+   box.innerHTML=(r.proof_paths||[]).map((p,i)=>mp[p]?`<a class="ph" href="${esc(mp[p])}" target="_blank" rel="noopener" aria-label="Buka foto bukti ${i+1}"><img src="${esc(mp[p])}" alt="Foto bukti ${i+1}" loading="lazy"></a>`:"").join("")||`<span class="mu sm">Foto tidak bisa dimuat. Cek policy storage untuk admin.</span>`})}}
+
+if(!ready)say(`${brand}</div><section class="pn"><h1>Belum tersambung</h1><p class="mu">Isi SUPABASE_URL dan SUPABASE_KEY di bagian atas admin.html.</p></section>`);
+else sb.auth.getSession().then(({data})=>data.session?gate():loginView());
 </script>
 </body>
 </html>
