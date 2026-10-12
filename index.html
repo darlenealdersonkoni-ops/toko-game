@@ -131,6 +131,9 @@ textarea.fi{min-height:90px;resize:vertical}
 .gn{position:absolute;right:8px;bottom:8px;background:#000a;color:#fff;font-size:12px;font-weight:800;border-radius:8px;padding:2px 10px}
 .ga{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:#000a;color:#fff;font-size:16px}
 .ga.l{left:8px}.ga.r{right:8px}
+.opts{display:grid;gap:8px;margin-top:6px}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:12px 14px;font-weight:800}
+.opt:hover{border-color:var(--acc)}
 @media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -152,6 +155,8 @@ textarea.fi{min-height:90px;resize:vertical}
   <a class="m" href="#/laporan"><span>Cek keaslian akun &amp; penjual</span><i>🛡️</i></a>
   <a class="m" href="https://whatsapp.com/channel/0029Vb9JKEZ3gvWVR7nwBB3M" target="_blank" rel="noopener"><span>Saluran WhatsApp</span><i>📢</i></a>
  </div>
+
+ <section class="sec" id="sTopup"><div class="hd"><h2>⚡ Top up game</h2><a href="#/layanan">Lihat semua</a></div><div class="row" id="rTopup"></div></section>
 
  <section class="sec"><div class="hd"><h2>Info terbaru</h2></div><div class="row" id="info"></div></section>
 
@@ -191,6 +196,7 @@ textarea.fi{min-height:90px;resize:vertical}
 </main>
 <main class="w view" id="v-layanan" hidden>
  <section class="pn"><div class="pill">💼 Layanan</div><h1 class="big">Layanan Satria Store.</h1><p class="sub">Pilih layanan, lalu pesan lewat WhatsApp admin.</p><div id="lv"></div></section>
+ <section class="pn" id="topup"><h2 style="font-size:22px">⚡ Top up game</h2><p class="sub">Diamond Free Fire, diamond Mobile Legends, dan Robux Roblox. Pilih game, pilih nominal, lalu lanjut ke WhatsApp admin.</p><div class="g2" id="lt"></div></section>
  <section class="pn"><h2 style="font-size:22px">Rental akun</h2><div class="g2" id="lr"></div></section>
 </main>
 
@@ -222,6 +228,43 @@ const slides=[
  {h:"Nokos siap pakai untuk verifikasi",p:"Nomor kosong, proses lewat admin Satria Store.",c:["#0F3D4A","#146B75"]},
  {h:"Jasa amankan akun mulai Rp30rb",p:"Takut akun hilang? Amankan dulu di sini.",c:["#2B2A63","#4743B8"]},
  {h:"Rental akun mulai Rp50rb",p:"Coba akun sultan tanpa beli, sewa per jam.",c:["#4A1E2B","#8A2C3F"]}];
+/* =====================================================
+   TOP UP GAME (Free Fire, Mobile Legends, Roblox)
+   Format item: [jumlah, harga]. Harga 0 = tampil "Tanya harga".
+   Ubah angka harga di bawah sesuai harga tokomu, contoh: [50,7000]
+   Mau tambah/kurangi nominal? Tambah atau hapus baris [jumlah,harga].
+   ===================================================== */
+const TU=[
+ {g:"Free Fire",u:"Diamond",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
+  items:[[5,0],[12,0],[50,0],[70,0],[140,0],[355,0],[720,0],[1450,0],[2180,0]]},
+ {g:"Mobile Legends",u:"Diamond",e:"💠",c:["#16306B","#1F4BA3"],need:"ID dan Zone ID Mobile Legends kamu",
+  items:[[86,0],[172,0],[257,0],[344,0],[429,0],[514,0],[706,0],[878,0],[1412,0]]},
+ {g:"Roblox",u:"Robux",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
+  items:[[80,0],[400,0],[800,0],[1700,0],[4500,0]]}];
+function tuCard(i){const x=TU[i];
+ return `<button class="c" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.e}</div>
+ <div class="ci"><span class="g">Top up</span><span class="t">${esc(x.g)} ${esc(x.u)}</span><span class="sv">${x.items.length} pilihan nominal</span><span class="p pk" style="margin-top:auto">Pilih nominal</span></div></button>`}
+function drawTU(){const h=TU.length?TU.map((_,i)=>tuCard(i)).join(""):`<p class="sub" style="grid-column:1/-1">Top up segera hadir.</p>`;
+ $("sTopup").hidden=!TU.length;
+ ["rTopup","lt"].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML=h;el.querySelectorAll("[data-tu]").forEach(b=>b.onclick=()=>openTU(+b.dataset.tu))})}
+/* Saat Supabase aktif, daftar top up diambil dari tabel "topups" (diatur lewat admin-topup.html).
+   Kalau tabel belum dibuat / gagal dimuat, daftar bawaan di atas tetap dipakai. */
+const TUM={};TU.forEach(x=>TUM[x.g.toLowerCase()]=x);
+async function loadTopups(){if(!LIVE)return;
+ const {data,error}=await sb.from("topups").select("game,unit,amount,price").eq("active",true).order("sort").order("amount");
+ if(error||!data)return;
+ const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]],m=new Map();
+ data.forEach(d=>{const k=d.game;
+  if(!m.has(k)){const st=TUM[k.toLowerCase()]||{e:"⚡",c:pal[m.size%pal.length],need:"ID akun game kamu"};m.set(k,{g:k,u:d.unit,e:st.e,c:st.c,need:st.need,items:[]})}
+  m.get(k).items.push([d.amount,d.price])});
+ TU.length=0;TU.push(...m.values());drawTU()}
+function openTU(i){const x=TU[i];
+ $("db").innerHTML=`<div class="dc" style="${bg(x.c)}" aria-hidden="true">${x.e}</div><span class="g">Top up</span><h3 style="font-size:21px">${esc(x.g)} ${esc(x.u)}</h3>
+ <p class="sub">Siapkan ${esc(x.need)}. Pilih nominal, lalu lanjut ke WhatsApp admin untuk pembayaran.</p>
+ <div class="opts">${x.items.map(([a,pr])=>{const n=a.toLocaleString("id-ID")+" "+x.u,m=encodeURIComponent("Halo admin Satria Store, saya mau top up "+x.g+" "+n+".");
+  return `<a class="opt" target="_blank" rel="noopener" href="${WA}?text=${m}"><span>${esc(n)}</span><span class="${pr?"p":"sub"}" style="font-size:${pr?16:13}px">${pr?rp(pr):"Tanya harga"}</span></a>`}).join("")}</div>
+ <button class="bt al" id="cl">Tutup</button>`;
+ $("cl").onclick=()=>$("dlg").close();$("dlg").showModal()}
 /* Data contoh untuk MODE DEMO. Saat Supabase aktif, semua ini dikosongkan dan diganti data dari admin. */
 const P=[
  {g:"Arena Legenda",t:"STOK AKUN JURAGAN 31",s:"Seller Satu",o:2700000,p:2500000,d:7,e:"👑",c:["#16306B","#1F4BA3"]},
@@ -269,7 +312,7 @@ function show({x,k}){
  }
  $("dlg").showModal()}
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
-fill();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
+fill();drawTU();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
 // banner
 let n=0;const go=i=>{n=(i+slides.length)%slides.length;$("sl").style.transform=`translateX(-${n*100}%)`;[...$("dots").children].forEach((d,j)=>d.className=j===n?"on":"")};go(0);
 if(!matchMedia("(prefers-reduced-motion:reduce)").matches)setInterval(()=>go(n+1),4500);
@@ -403,13 +446,14 @@ function drawProduk(){
  $("pg").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
 // halaman layanan
 const SV=[
- {e:"⚡",t:"Top Up All Game",d:"Diamond, voucher, dan koin. Proses cepat setelah bayar.",c:["#16306B","#1F4BA3"]},
+ {e:"⚡",t:"Top Up All Game",d:"Diamond Free Fire, diamond Mobile Legends, Robux Roblox, dan game lain. Proses cepat setelah bayar.",c:["#16306B","#1F4BA3"],h:"#/layanan",b:"Pilih game"},
  {e:"📲",t:"Nokos (Nomor Kosong)",d:"Nomor virtual untuk verifikasi akun. Lihat stok terbaru di halaman Produk.",c:["#0F3D4A","#146B75"],h:"#/produk",f:"Nokos",b:"Lihat stok"},
  {e:"🛡️",t:"Jasa Amankan Akun",d:"Ikat akun ke email atau Google kamu supaya tidak diambil orang. Mulai Rp30.000.",c:["#2B2A63","#4743B8"]},
  {e:"🔎",t:"Cek Keaslian Akun & Penjual",d:"Cari nomor WA atau ID game di daftar laporan.",c:["#4A1E2B","#8A2C3F"],h:"#/laporan",b:"Buka"}];
 function drawLayanan(){
- $("lv").innerHTML=SV.map(x=>`<div class="rp" style="align-items:center"><div class="scam" style="${bg(x.c)};font-size:34px" aria-hidden="true">${x.e}</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:17px">${esc(x.t)}</div><p class="sub" style="font-size:13px;margin:2px 0 8px">${esc(x.d)}</p><a class="chip" style="display:inline-block;background:var(--fill);border-color:var(--fill);color:var(--onf)" ${x.h?`href="${x.h}" ${x.f?`data-f="${x.f}"`:""}`:`href="${WA}?text=${encodeURIComponent("Halo admin Satria Store, saya mau pesan "+x.t)}" target="_blank" rel="noopener"`}>${x.h?x.b:"Pesan via WA"}</a></div></div>`).join("");
+ $("lv").innerHTML=SV.map(x=>`<div class="rp" style="align-items:center"><div class="scam" style="${bg(x.c)};font-size:34px" aria-hidden="true">${x.e}</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:17px">${esc(x.t)}</div><p class="sub" style="font-size:13px;margin:2px 0 8px">${esc(x.d)}</p><a class="chip" style="display:inline-block;background:var(--fill);border-color:var(--fill);color:var(--onf)" ${x.h?`href="${x.h}" ${x.f?`data-f="${x.f}"`:""}${x.h==="#/layanan"?` data-go="topup"`:""}`:`href="${WA}?text=${encodeURIComponent("Halo admin Satria Store, saya mau pesan "+x.t)}" target="_blank" rel="noopener"`}>${x.h?x.b:"Pesan via WA"}</a></div></div>`).join("");
  $("lv").querySelectorAll("[data-f]").forEach(a=>a.addEventListener("click",()=>{PS.k=a.dataset.f;PS.g="Semua"}));
+ $("lv").querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();$("topup").scrollIntoView()}));
  $("lr").innerHTML=R.length?R.map(x=>card(x,"r")).join(""):`<p class="sub" style="grid-column:1/-1">Belum ada akun rental.</p>`;
  $("lr").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
 // router sederhana (hash) agar jalan di GitHub Pages
@@ -423,7 +467,7 @@ function route(){const h=location.hash;
  document.querySelectorAll(".bn a").forEach((a,i)=>a.classList.toggle("on",i===k));
  const id=h.startsWith("#/")?"":h.slice(1),el=id&&$(id);
  if(el&&r==="home")el.scrollIntoView();else if(!id)window.scrollTo(0,0)}
-if(LIVE)REP.length=0;addEventListener("hashchange",route);route();loadProducts();
+if(LIVE)REP.length=0;addEventListener("hashchange",route);route();loadProducts();loadTopups();
 </script>
 </body>
 </html>
