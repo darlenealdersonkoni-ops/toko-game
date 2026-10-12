@@ -35,17 +35,18 @@ a{color:inherit;text-decoration:none}
 .ib{flex:none;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card2)}
 .tick{display:flex;align-items:center;gap:8px;justify-content:center;font-size:13px;padding:8px 0;border-bottom:1px solid var(--line);margin-top:10px;color:var(--mute)}
 .tick button{background:none;border:0;border-left:1px solid var(--line);padding:0 10px;margin-left:6px;color:var(--mute)}
-.ban{position:relative;overflow:hidden;border-radius:18px;margin-top:14px;border:1px solid var(--line)}
+.ban{position:relative;overflow:hidden;border-radius:18px;margin-top:14px;border:1px solid var(--line);touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.ban:active{cursor:grabbing}
 .sl{display:flex;transition:transform .5s}
 .s{position:relative;overflow:hidden;flex:none;width:100%;min-height:190px;padding:24px 22px 30px;display:flex;flex-direction:column;justify-content:center;gap:8px;color:#fff}
 .s::after{content:"";position:absolute;right:-14px;bottom:-26px;width:150px;height:172px;background:#fff;opacity:.08;clip-path:polygon(50% 0,100% 14%,100% 58%,50% 100%,0 58%,0 14%)}
 .s.sb{padding:0;min-height:0;display:block;background:#050a18}
 .s.sb::after{display:none}
-.s.sb img{display:block;width:100%;height:auto}
+.s.sb img{display:block;width:100%;height:auto;-webkit-user-drag:none;pointer-events:none}
 .s h2{font-size:clamp(25px,7vw,36px);font-weight:700;line-height:1.1;max-width:11em;position:relative;z-index:1}
 .s p{max-width:20em;font-size:14px;opacity:.92;position:relative;z-index:1}
 .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:6px;justify-content:center;z-index:2}
-.dots i{width:9px;height:9px;border-radius:9px;background:#fff6;transition:width .3s}
+.dots i{width:9px;height:9px;border-radius:9px;background:#fff6;transition:width .3s;cursor:pointer}
 .dots i.on{width:28px;background:#fff}
 .menu{display:grid;gap:10px;margin-top:14px}
 .m{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:800;font-size:16px;text-align:left;width:100%}
@@ -142,6 +143,21 @@ textarea.fi{min-height:90px;resize:vertical}
 .row.tup{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;overflow:visible;margin:0;padding:2px 0 12px}
 .row.tup .c{width:auto}
 .c.tu .t{font-size:16px}
+/* ===== Satria Store animasi ===== */
+.wm,.shine{background:linear-gradient(90deg,var(--acc) 0%,var(--ink) 35%,var(--acc) 55%,#ff7a18 80%,var(--acc) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:shine 3.5s linear infinite}
+@keyframes shine{to{background-position:-250% 0}}
+.mark{animation:glow 2.6s ease-in-out infinite}
+@keyframes glow{50%{filter:drop-shadow(0 0 9px var(--acc));transform:translateY(-1px) scale(1.07)}}
+.brand:hover .mark{animation-duration:.9s}
+/* ===== kode diskon ===== */
+.pc{flex:none;width:235px;border:2px dashed var(--acc);border-radius:14px;background:var(--card);padding:14px;display:grid;gap:6px;position:relative;overflow:hidden}
+.pc::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 40%,#ffffff22 50%,transparent 60%);background-size:250% 100%;animation:shine2 3s linear infinite;pointer-events:none}
+@keyframes shine2{from{background-position:150% 0}to{background-position:-100% 0}}
+.pc b{font:700 24px var(--d);color:var(--acc);letter-spacing:.07em}
+.pc span{font-size:13px;color:var(--mute)}
+.pc button{border:0;background:var(--fill);color:var(--onf);font-weight:800;border-radius:10px;padding:8px}
+.promo{display:flex;gap:8px;margin-top:6px}
+.promo .fi{text-transform:uppercase}
 @media (min-width:760px){
  body{font-size:16px}
  .menu{grid-template-columns:1fr 1fr}
@@ -156,7 +172,7 @@ textarea.fi{min-height:90px;resize:vertical}
  .pn{padding:22px}
 }
 @media (max-width:420px){.row.tup{grid-template-columns:1fr 1fr;gap:10px}.c.tu .t{font-size:15px}}
-@media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.sl,.dots i{transition:none}html{scroll-behavior:auto}.wm,.shine,.mark,.pc::before{animation:none}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -178,6 +194,8 @@ textarea.fi{min-height:90px;resize:vertical}
   <a class="m" href="https://whatsapp.com/channel/0029Vb9JKEZ3gvWVR7nwBB3M" target="_blank" rel="noopener"><span>Saluran WhatsApp</span><i>📢</i></a>
  </div>
 
+ <section class="sec" id="sPromo"><div class="hd"><h2>🎟️ Kode diskon</h2></div><div class="row" id="rPromo"></div></section>
+
  <section class="sec" id="sTopup"><div class="hd"><h2>⚡ Top up game</h2><a href="#/layanan">Lihat semua</a></div><div class="row tup" id="rTopup"></div></section>
 
  <section class="sec"><div class="hd"><h2>Info terbaru</h2></div><div class="row" id="info"></div></section>
@@ -190,7 +208,7 @@ textarea.fi{min-height:90px;resize:vertical}
  <section class="sec" id="partner" hidden><div class="hd"><h2>🤝 Partner resmi</h2></div><div class="row" id="rPart"></div></section>
 
  <section class="sec" id="tentang">
-  <h1 style="font-size:30px;font-weight:700">Satria Store</h1>
+  <h1 class="shine" style="font-size:34px;font-weight:700;width:fit-content">Satria Store</h1>
   <p style="color:var(--mute);margin-top:12px">Marketplace game terpercaya. Tempat untuk rental akun, stok akun, nokos, top up, dan layanan game lainnya.</p>
   <h2 style="font-size:20px;margin-top:26px">Sosial media</h2>
   <div class="lst">
@@ -247,10 +265,26 @@ const fmt=s=>String(s||"").split(",").filter(Boolean).map(esc).join(", ");
 const bg=c=>`background:linear-gradient(115deg,${c[0]} 0 58%,${c[1]} 58% 100%)`;
 const slides=[
  {img:"banner.jpg",alt:"Satria JB: cari akun dan jual akun, aman dan bergaransi"},
+ {img:"banner-zoro1.jpg",alt:"Satria JB: penuhi kebutuhan game kalian"},
+ {img:"banner-zoro2.jpg",alt:"Butuh admin rekber? Satria JB solusinya"},
  {h:"Top up game cepat dan murah",p:"Semua metode bayar: QRIS, e-wallet, bank.",c:["#16306B","#1F4BA3"]},
  {h:"Nokos siap pakai untuk verifikasi",p:"Nomor kosong, proses lewat admin Satria Store.",c:["#0F3D4A","#146B75"]},
  {h:"Jasa amankan akun mulai Rp30rb",p:"Takut akun hilang? Amankan dulu di sini.",c:["#2B2A63","#4743B8"]},
  {h:"Rental akun mulai Rp50rb",p:"Coba akun sultan tanpa beli, sewa per jam.",c:["#4A1E2B","#8A2C3F"]}];
+/* =====================================================
+   KODE DISKON: ubah/tambah/hapus sesuka hati.
+   pct = persen potongan, flat = potongan rupiah
+   ===================================================== */
+const PROMO=[
+ {c:"SATRIA10",t:"Diskon 10% semua stok akun",pct:10},
+ {c:"HEMAT5K",t:"Potongan Rp5.000",flat:5000},
+ {c:"NOKOS2",t:"Diskon 20% khusus pengguna baru",pct:20}];
+function drawPromo(){
+ $("sPromo").hidden=!PROMO.length;
+ $("rPromo").innerHTML=PROMO.map((z,i)=>`<div class="pc"><b>${esc(z.c)}</b><span>${esc(z.t)}</span><button data-pc="${i}">Salin kode</button></div>`).join("");
+ $("rPromo").querySelectorAll("[data-pc]").forEach(b=>b.onclick=async()=>{
+  try{await navigator.clipboard.writeText(PROMO[+b.dataset.pc].c);b.textContent="Tersalin ✓"}catch(e){b.textContent=PROMO[+b.dataset.pc].c}
+  setTimeout(()=>b.textContent="Salin kode",1800)})}
 /* =====================================================
    TOP UP GAME (Free Fire, Mobile Legends, Roblox)
    Format item: [jumlah, harga]. Harga 0 = tampil "Tanya harga".
@@ -317,7 +351,7 @@ function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
  return `<button class="c" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}</div>
  <div class="ci"><span class="g">${LAB[k]||x.g||""}</span><span class="t">${x.t}</span><span class="sv">${x.s}</span>
  ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
-$("sl").innerHTML=slides.map(s=>s.img?`<div class="s sb"><img src="${esc(s.img)}" alt="${esc(s.alt||"")}"></div>`:`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
+$("sl").innerHTML=slides.map(s=>s.img?`<div class="s sb"><img src="${esc(s.img)}" alt="${esc(s.alt||"")}" draggable="false"></div>`:`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
 $("dots").innerHTML=slides.map(()=>"<i></i>").join("");
 $("info").innerHTML=slides.filter(s=>!s.img).slice(0,3).map(s=>`<div class="c" style="width:240px;min-height:150px;${bg(s.c)};padding:16px;justify-content:center;color:#fff"><b style="font-size:17px;font-family:var(--d)">${s.h}</b><span style="font-size:13px;margin-top:6px">${s.p}</span></div>`).join("");
 function openItem(b){const x=all[+b.dataset.i];show({x,k:x.k})}
@@ -333,8 +367,15 @@ function show({x,k}){
  const imgs=x.imgs&&x.imgs.length?x.imgs:(x.img?[x.img]:[]);
  $("db").innerHTML=`${imgs.length?`<div class="gal"><div class="gs" id="gs">${imgs.map((u,i)=>`<img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy">`).join("")}</div>${imgs.length>1?`<span class="gn" id="gn">1/${imgs.length}</span><button class="ga l" id="gp" aria-label="Foto sebelumnya">‹</button><button class="ga r" id="gx" aria-label="Foto berikutnya">›</button>`:""}</div>`:`<div class="dc" style="${bg(x.c)}">${x.e}</div>`}<span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
  ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:26px">${rp(x.p)}</b></p>`:""}
- <a class="bt" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a><button class="bt al" id="cl">Tutup</button>`;
+ ${x.p&&k!=="t"?`<div class="promo"><input class="fi" id="pcode" placeholder="Punya kode diskon?" aria-label="Kode diskon" autocomplete="off"><button class="ob" id="pap" type="button">Pakai</button></div><p class="msg" id="pmsg" role="status"></p>`:""}
+ <a class="bt" id="buy" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a><button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();
+ const pa=$("pap");
+ if(pa)pa.onclick=()=>{const c=$("pcode").value.trim().toUpperCase(),pm=PROMO.find(z=>z.c===c),m=$("pmsg");
+  if(!pm){m.textContent="Kode tidak valid.";return}
+  const cut=pm.pct?Math.round(x.p*pm.pct/100):pm.flat,fin=Math.max(0,x.p-cut);
+  m.innerHTML=`Kode ${esc(c)} dipakai. Hemat ${rp(cut)}, harga jadi <b class="p">${rp(fin)}</b>`;
+  $("buy").href=`${WA}?text=${encodeURIComponent("Halo admin Satria Store, saya mau beli "+String(x.t).replace(/&amp;/g,"&")+" pakai kode "+c+" (harga setelah diskon "+rp(fin)+")")}`};
  const gs=$("gs");
  if(gs&&imgs.length>1){
   gs.onscroll=()=>{$("gn").textContent=(Math.round(gs.scrollLeft/gs.clientWidth)+1)+"/"+imgs.length};
@@ -343,10 +384,18 @@ function show({x,k}){
  }
  $("dlg").showModal()}
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
-fill();drawTU();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
-// banner
-let n=0;const go=i=>{n=(i+slides.length)%slides.length;$("sl").style.transform=`translateX(-${n*100}%)`;[...$("dots").children].forEach((d,j)=>d.className=j===n?"on":"")};go(0);
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches)setInterval(()=>go(n+1),4500);
+fill();drawTU();drawPromo();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
+// banner (bisa digeser dengan jari atau mouse)
+let n=0,tm;const sl=$("sl");
+const go=i=>{n=(i+slides.length)%slides.length;sl.style.transform=`translateX(-${n*100}%)`;[...$("dots").children].forEach((d,j)=>d.className=j===n?"on":"")};
+const auto=()=>{clearInterval(tm);if(!matchMedia("(prefers-reduced-motion:reduce)").matches)tm=setInterval(()=>go(n+1),4500)};
+go(0);auto();
+let sx=null,dx=0;
+sl.addEventListener("pointerdown",e=>{sx=e.clientX;dx=0;clearInterval(tm);sl.style.transition="none"});
+addEventListener("pointermove",e=>{if(sx===null)return;dx=e.clientX-sx;sl.style.transform=`translateX(calc(-${n*100}% + ${dx}px))`});
+const endDrag=()=>{if(sx===null)return;sl.style.transition="";Math.abs(dx)>50?go(n+(dx<0?1:-1)):go(n);sx=null;auto()};
+addEventListener("pointerup",endDrag);addEventListener("pointercancel",endDrag);
+[...$("dots").children].forEach((d,j)=>d.onclick=()=>{go(j);auto()});
 $("tx").onclick=()=>$("tick").remove();
 // tema
 const th=$("th"),root=document.documentElement;
