@@ -293,10 +293,18 @@ function drawPromo(){
 /* Ambil kode diskon dari Supabase (hanya yang active dan belum kedaluwarsa) */
 const normP=d=>({c:String(d.code).toUpperCase(),t:d.title||"",pct:d.pct||0,flat:d.flat||0,min:d.min_price||0});
 const PQ=()=>sb.from("promos").select("code,title,pct,flat,min_price").eq("active",true).or("expires_at.is.null,expires_at.gt."+new Date().toISOString());
-async function loadPromos(){if(!LIVE)return;
- const {data,error}=await PQ().order("sort").order("id");
- if(error||!data)return;
- PROMO.length=0;data.forEach(d=>PROMO.push(normP(d)));drawPromo()}
+async function loadPromos(){
+ if(!LIVE){drawPromo();return}
+ // Jangan mengurutkan dengan kolom "sort": banyak tabel promos tidak memiliki kolom itu.
+ const {data,error}=await PQ().order("id",{ascending:true});
+ if(error){
+  console.error("Gagal memuat kode diskon dari Supabase:",error);
+  $("sPromo").hidden=false;
+  $("rPromo").innerHTML='<p class="sub">Kode diskon belum dapat dimuat. Periksa tabel promos dan izin SELECT publik di Supabase.</p>';
+  return;
+ }
+ PROMO.length=0;(data||[]).forEach(d=>PROMO.push(normP(d)));drawPromo()
+}
 /* =====================================================
    TOP UP GAME (Free Fire, Mobile Legends, Roblox)
    Format item: [jumlah, harga]. Harga 0 = tampil "Tanya harga".
@@ -386,10 +394,17 @@ function show({x,k}){
  if(pa)pa.onclick=async()=>{const c=$("pcode").value.trim().toUpperCase(),m=$("pmsg");
   if(!c){m.textContent="Masukkan kode dulu.";return}
   let pm=PROMO.find(z=>z.c===c);
-  if(LIVE){pa.disabled=true;m.textContent="Memeriksa kode…";
-   const {data}=await PQ().eq("code",c).maybeSingle();
-   pa.disabled=false;pm=data?normP(data):null}
-  if(!pm){m.textContent="Kode tidak valid atau sudah tidak aktif.";return}
+  if(LIVE){
+   pa.disabled=true;m.textContent="Memeriksa kode…";
+   try{
+    // ilike menerima kode yang tersimpan dengan huruf kecil/besar berbeda.
+    const {data,error}=await PQ().ilike("code",c).maybeSingle();
+    if(error){console.error("Validasi kode diskon gagal:",error);m.textContent="Kode belum bisa diperiksa. Coba lagi atau hubungi admin.";return}
+    pm=data?normP(data):null;
+   }catch(err){console.error(err);m.textContent="Koneksi gagal saat memeriksa kode. Coba lagi.";return}
+   finally{pa.disabled=false}
+  }
+  if(!pm){m.textContent="Kode tidak valid, belum aktif, atau sudah kedaluwarsa.";return}
   if(pm.min&&x.p<pm.min){m.textContent="Kode ini untuk pembelian minimal "+rp(pm.min)+".";return}
   const cut=Math.min(x.p,pm.pct?Math.round(x.p*pm.pct/100):pm.flat),fin=Math.max(0,x.p-cut);
   m.innerHTML=`Kode ${esc(c)} dipakai. Hemat ${rp(cut)}, harga jadi <b class="p">${rp(fin)}</b>`;
