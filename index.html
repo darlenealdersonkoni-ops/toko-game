@@ -273,37 +273,47 @@ const slides=[
  {h:"Jasa amankan akun mulai Rp30rb",p:"Takut akun hilang? Amankan dulu di sini.",c:["#2B2A63","#4743B8"]},
  {h:"Rental akun mulai Rp50rb",p:"Coba akun sultan tanpa beli, sewa per jam.",c:["#4A1E2B","#8A2C3F"]}];
 /* =====================================================
-   KODE DISKON
-   Saat Supabase aktif, daftar kode diambil dari tabel "promos"
-   (kolom active = nyala/mati, pct = persen, flat = rupiah,
-   min_price = minimal harga, expires_at = kedaluwarsa).
-   Daftar di bawah ini HANYA dipakai di MODE DEMO.
-   pct = persen potongan, flat = potongan rupiah, min = minimal harga
+   KODE DISKON — memakai tabel `vouchers` yang sama dengan admin.html.
+   Voucher publik dan validasi checkout harus bersumber dari database yang sama.
    ===================================================== */
-const PROMO=[
- {c:"SATRIA10",t:"Diskon 10% semua stok akun",pct:10},
- {c:"HEMAT5K",t:"Potongan Rp5.000",flat:5000},
- {c:"NOKOS2",t:"Diskon 20% khusus pengguna baru",pct:20}];
-function drawPromo(){
- $("sPromo").hidden=!PROMO.length;
- $("rPromo").innerHTML=PROMO.map((z,i)=>`<div class="pc"><b>${esc(z.c)}</b><span>${esc(z.t)}${z.min?` (min ${rp(z.min)})`:""}</span><button data-pc="${i}">Salin kode</button></div>`).join("");
- $("rPromo").querySelectorAll("[data-pc]").forEach(b=>b.onclick=async()=>{
-  try{await navigator.clipboard.writeText(PROMO[+b.dataset.pc].c);b.textContent="Tersalin ✓"}catch(e){b.textContent=PROMO[+b.dataset.pc].c}
-  setTimeout(()=>b.textContent="Salin kode",1800)})}
-/* Ambil kode diskon dari Supabase (hanya yang active dan belum kedaluwarsa) */
-const normP=d=>({c:String(d.code).toUpperCase(),t:d.title||"",pct:d.pct||0,flat:d.flat||0,min:d.min_price||0});
-const PQ=()=>sb.from("promos").select("code,title,pct,flat,min_price").eq("active",true).or("expires_at.is.null,expires_at.gt."+new Date().toISOString());
-async function loadPromos(){
- if(!LIVE){drawPromo();return}
- // Jangan mengurutkan dengan kolom "sort": banyak tabel promos tidak memiliki kolom itu.
- const {data,error}=await PQ().order("id",{ascending:true});
- if(error){
-  console.error("Gagal memuat kode diskon dari Supabase:",error);
+const PROMO=[];
+function drawPromo(message=""){
+ const row=$("rPromo");
+ if(!PROMO.length){
   $("sPromo").hidden=false;
-  $("rPromo").innerHTML='<p class="sub">Kode diskon belum dapat dimuat. Periksa tabel promos dan izin SELECT publik di Supabase.</p>';
+  row.innerHTML=`<p class="sub">${esc(message||"Belum ada voucher aktif.")}</p>`;
   return;
  }
- PROMO.length=0;(data||[]).forEach(d=>PROMO.push(normP(d)));drawPromo()
+ $("sPromo").hidden=false;
+ row.innerHTML=PROMO.map((z,i)=>`<div class="pc"><b>${esc(z.c)}</b><span>${esc(z.t)}${z.min?` (min ${rp(z.min)})`:""}</span><button data-pc="${i}">Salin kode</button></div>`).join("");
+ row.querySelectorAll("[data-pc]").forEach(b=>b.onclick=async()=>{
+  try{await navigator.clipboard.writeText(PROMO[+b.dataset.pc].c);b.textContent="Tersalin ✓"}
+  catch(e){b.textContent=PROMO[+b.dataset.pc].c}
+  setTimeout(()=>b.textContent="Salin kode",1800)
+ });
+}
+const normP=d=>({
+ c:String(d.code||"").trim().toUpperCase(),
+ t:d.note|| (d.kind==="pct"?`Diskon ${Number(d.value)||0}%`:`Potongan ${rp(d.value)}`),
+ kind:d.kind==="nom"?"nom":"pct", value:Number(d.value)||0,
+ max_discount:Number(d.max_discount)||0, min:Number(d.min_order)||0,
+ quota:d.quota==null?null:Number(d.quota), used:Number(d.used)||0,
+ expires_at:d.expires_at||null, active:!!d.active
+});
+const PQ=()=>sb.from("vouchers").select("id,code,kind,value,max_discount,min_order,quota,used,expires_at,note,active").eq("active",true).or("expires_at.is.null,expires_at.gt."+new Date().toISOString());
+async function loadPromos(){
+ PROMO.length=0;
+ if(!LIVE){drawPromo("Mode demo: belum tersambung ke database voucher.");return}
+ try{
+  const {data,error}=await PQ().order("id",{ascending:false});
+  if(error)throw error;
+  const now=Date.now();
+  (data||[]).map(normP).filter(v=>v.c&&(!v.expires_at||new Date(v.expires_at).getTime()>now)&&(v.quota===null||v.used<v.quota)).forEach(v=>PROMO.push(v));
+  drawPromo();
+ }catch(error){
+  console.error("Gagal memuat voucher dari tabel vouchers:",error);
+  drawPromo("Voucher belum dapat dimuat. Pastikan tabel vouchers dan izin SELECT publik di Supabase sudah benar.");
+ }
 }
 /* =====================================================
    TOP UP GAME (Free Fire, Mobile Legends, Roblox)
@@ -393,22 +403,28 @@ function show({x,k}){
  const pa=$("pap");
  if(pa)pa.onclick=async()=>{const c=$("pcode").value.trim().toUpperCase(),m=$("pmsg");
   if(!c){m.textContent="Masukkan kode dulu.";return}
-  let pm=PROMO.find(z=>z.c===c);
+  let pm=null;
   if(LIVE){
    pa.disabled=true;m.textContent="Memeriksa kode…";
    try{
-    // ilike menerima kode yang tersimpan dengan huruf kecil/besar berbeda.
+    // Kode disimpan dalam huruf besar oleh admin. Escape wildcard agar pencarian literal.
     const {data,error}=await PQ().ilike("code",c).maybeSingle();
-    if(error){console.error("Validasi kode diskon gagal:",error);m.textContent="Kode belum bisa diperiksa. Coba lagi atau hubungi admin.";return}
+    if(error){console.error("Validasi voucher gagal:",error);m.textContent="Voucher belum bisa diperiksa. Coba lagi atau hubungi admin.";return}
     pm=data?normP(data):null;
-   }catch(err){console.error(err);m.textContent="Koneksi gagal saat memeriksa kode. Coba lagi.";return}
+   }catch(err){console.error(err);m.textContent="Koneksi gagal saat memeriksa voucher. Coba lagi.";return}
    finally{pa.disabled=false}
+  }else{
+   pm=PROMO.find(z=>z.c===c)||null;
   }
-  if(!pm){m.textContent="Kode tidak valid, belum aktif, atau sudah kedaluwarsa.";return}
+  if(!pm||!pm.active){m.textContent="Kode tidak valid atau voucher tidak aktif.";return}
+  if(pm.expires_at&&new Date(pm.expires_at).getTime()<=Date.now()){m.textContent="Voucher sudah kedaluwarsa.";return}
+  if(pm.quota!==null&&pm.used>=pm.quota){m.textContent="Kuota voucher sudah habis.";return}
   if(pm.min&&x.p<pm.min){m.textContent="Kode ini untuk pembelian minimal "+rp(pm.min)+".";return}
-  const cut=Math.min(x.p,pm.pct?Math.round(x.p*pm.pct/100):pm.flat),fin=Math.max(0,x.p-cut);
+  let cut=pm.kind==="pct"?Math.round(x.p*pm.value/100):pm.value;
+  if(pm.kind==="pct"&&pm.max_discount>0)cut=Math.min(cut,pm.max_discount);
+  cut=Math.min(x.p,Math.max(0,cut));const fin=Math.max(0,x.p-cut);
   m.innerHTML=`Kode ${esc(c)} dipakai. Hemat ${rp(cut)}, harga jadi <b class="p">${rp(fin)}</b>`;
-  $("buy").href=`${WA}?text=${encodeURIComponent("Halo admin Satria Store, saya mau beli "+String(x.t).replace(/&amp;/g,"&")+" pakai kode "+c+" (harga setelah diskon "+rp(fin)+")")}`};
+  $("buy").href=`${WA}?text=${encodeURIComponent("Halo admin Satria Store, saya mau beli "+String(x.t).replace(/&amp;/g,"&")+" pakai kode "+c+" (harga setelah diskon "+rp(fin)+"). Mohon verifikasi voucher dan kuota sebelum pembayaran.")}`};
  const gs=$("gs");
  if(gs&&imgs.length>1){
   gs.onscroll=()=>{$("gn").textContent=(Math.round(gs.scrollLeft/gs.clientWidth)+1)+"/"+imgs.length};
