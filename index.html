@@ -234,35 +234,43 @@ const slides=[
    Ubah angka harga di bawah sesuai harga tokomu, contoh: [50,7000]
    Mau tambah/kurangi nominal? Tambah atau hapus baris [jumlah,harga].
    ===================================================== */
+const mkN=(a,u,s)=>a.map(n=>[n,0,"",u,s]);          /* nominal biasa: [jumlah,harga,"",satuan,bagian] */
+const mkL=(a,s)=>a.map((n,i)=>[i+1,0,n,"",s]);        /* paket bernama: [urutan,harga,nama,"",bagian] */
+const SECO=["Diamond","Memberships","Cards & Passes"];  /* urutan bagian di popup */
 const TU=[
- {g:"Free Fire",u:"Diamond",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
-  items:[[5,0],[12,0],[50,0],[70,0],[140,0],[355,0],[720,0],[1450,0],[2180,0]]},
- {g:"Mobile Legends",u:"Diamond",e:"💠",c:["#16306B","#1F4BA3"],need:"ID dan Zone ID Mobile Legends kamu",
-  items:[[86,0],[172,0],[257,0],[344,0],[429,0],[514,0],[706,0],[878,0],[1412,0]]},
- {g:"Roblox",u:"Robux",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
-  items:[[80,0],[400,0],[800,0],[1700,0],[4500,0]]}];
+ {g:"Free Fire",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
+  items:[...mkN([5,12,50,70,140,355,720,1450,2180],"Diamond","Diamond"),
+   ...mkL(["Membership Mingguan","Membership Mingguan x2","Membership Mingguan x3","Membership Mingguan x4","Membership Mingguan x5","Membership Bulanan","Membership Bulanan x2","Membership Bulanan x3","Membership Bulanan x4","Membership Bulanan x5"],"Memberships"),
+   ...mkL(["BP Card"],"Cards & Passes")]},
+ {g:"Mobile Legends",e:"💠",c:["#16306B","#1F4BA3"],need:"ID dan Zone ID Mobile Legends kamu",
+  items:mkN([86,172,257,344,429,514,706,878,1412],"Diamond","Diamond")},
+ {g:"Roblox",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
+  items:mkN([80,400,800,1700,4500],"Robux","Robux")}];
 function tuCard(i){const x=TU[i];
  return `<button class="c" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.e}</div>
- <div class="ci"><span class="g">Top up</span><span class="t">${esc(x.g)} ${esc(x.u)}</span><span class="sv">${x.items.length} pilihan nominal</span><span class="p pk" style="margin-top:auto">Pilih nominal</span></div></button>`}
+ <div class="ci"><span class="g">Top up</span><span class="t">${esc(x.g)}</span><span class="sv">${x.items.length} pilihan</span><span class="p pk" style="margin-top:auto">Pilih paket</span></div></button>`}
 function drawTU(){const h=TU.length?TU.map((_,i)=>tuCard(i)).join(""):`<p class="sub" style="grid-column:1/-1">Top up segera hadir.</p>`;
  $("sTopup").hidden=!TU.length;
  ["rTopup","lt"].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML=h;el.querySelectorAll("[data-tu]").forEach(b=>b.onclick=()=>openTU(+b.dataset.tu))})}
-/* Saat Supabase aktif, daftar top up diambil dari tabel "topups" (diatur lewat admin-topup.html).
+/* Saat Supabase aktif, daftar top up diambil dari tabel "topups" (diatur lewat tab Top Up di admin.html).
    Kalau tabel belum dibuat / gagal dimuat, daftar bawaan di atas tetap dipakai. */
 const TUM={};TU.forEach(x=>TUM[x.g.toLowerCase()]=x);
 async function loadTopups(){if(!LIVE)return;
- const {data,error}=await sb.from("topups").select("game,unit,amount,price").eq("active",true).order("sort").order("amount");
+ const {data,error}=await sb.from("topups").select("game,unit,amount,price,label,section").eq("active",true).order("sort").order("amount");
  if(error||!data)return;
  const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]],m=new Map();
  data.forEach(d=>{const k=d.game;
-  if(!m.has(k)){const st=TUM[k.toLowerCase()]||{e:"⚡",c:pal[m.size%pal.length],need:"ID akun game kamu"};m.set(k,{g:k,u:d.unit,e:st.e,c:st.c,need:st.need,items:[]})}
-  m.get(k).items.push([d.amount,d.price])});
+  if(!m.has(k)){const st=TUM[k.toLowerCase()]||{e:"⚡",c:pal[m.size%pal.length],need:"ID akun game kamu"};m.set(k,{g:k,e:st.e,c:st.c,need:st.need,items:[]})}
+  m.get(k).items.push([d.amount,d.price,d.label,d.unit||"",d.section||(d.label?"Paket":(d.unit||"Nominal"))])});
  TU.length=0;TU.push(...m.values());drawTU()}
-function openTU(i){const x=TU[i];
- $("db").innerHTML=`<div class="dc" style="${bg(x.c)}" aria-hidden="true">${x.e}</div><span class="g">Top up</span><h3 style="font-size:21px">${esc(x.g)} ${esc(x.u)}</h3>
- <p class="sub">Siapkan ${esc(x.need)}. Pilih nominal, lalu lanjut ke WhatsApp admin untuk pembayaran.</p>
- <div class="opts">${x.items.map(([a,pr])=>{const n=a.toLocaleString("id-ID")+" "+x.u,m=encodeURIComponent("Halo admin Satria Store, saya mau top up "+x.g+" "+n+".");
-  return `<a class="opt" target="_blank" rel="noopener" href="${WA}?text=${m}"><span>${esc(n)}</span><span class="${pr?"p":"sub"}" style="font-size:${pr?16:13}px">${pr?rp(pr):"Tanya harga"}</span></a>`}).join("")}</div>
+function openTU(i){const x=TU[i],secs=[];
+ x.items.forEach(it=>{let s=secs.find(z=>z.n===it[4]);if(!s)secs.push(s={n:it[4],l:[]});s.l.push(it)});
+ secs.sort((a,b)=>{const p=SECO.indexOf(a.n),q=SECO.indexOf(b.n);return (p<0?99:p)-(q<0?99:q)});
+ const opt=([a,pr,lb,u])=>{const n=lb||(a.toLocaleString("id-ID")+" "+u),m=encodeURIComponent("Halo admin Satria Store, saya mau "+(lb?"beli "+lb+" ("+x.g+")":"top up "+x.g+" "+n)+".");
+  return `<a class="opt" target="_blank" rel="noopener" href="${WA}?text=${m}"><span>${esc(n)}</span><span class="${pr?"p":"sub"}" style="font-size:${pr?16:13}px">${pr?rp(pr):"Tanya harga"}</span></a>`};
+ $("db").innerHTML=`<div class="dc" style="${bg(x.c)}" aria-hidden="true">${x.e}</div><span class="g">Top up</span><h3 style="font-size:21px">${esc(x.g)}</h3>
+ <p class="sub">Siapkan ${esc(x.need)}. Pilih paket, lalu lanjut ke WhatsApp admin untuk pembayaran.</p>
+ ${secs.map(z=>(secs.length>1?`<h3 style="font-size:16px;margin:10px 0 0;color:var(--acc)">${esc(z.n)}</h3>`:"")+`<div class="opts">${z.l.map(opt).join("")}</div>`).join("")}
  <button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();$("dlg").showModal()}
 /* Data contoh untuk MODE DEMO. Saat Supabase aktif, semua ini dikosongkan dan diganti data dari admin. */
