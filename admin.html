@@ -14,24 +14,35 @@
 padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
 @media (prefers-color-scheme:light){:root{--bg:#F3F4FB;--bg2:#FBF3E2;--card:#fff;--card2:#EEF0FB;--ink:#12163A;--mute:#575C8A;--line:#D5D8EF;--acc:#F2A81D;--accT:#9A5B00;--ok:#0F8F5F;--wt:#B45309;--red:#C42B42}}
 *,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:70px}
 body{margin:0;min-height:100vh;color:var(--ink);font:500 15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(800px 360px at 90% -8%,#F2B33D22,transparent),radial-gradient(700px 420px at -10% 8%,#4B5CFF2c,transparent),linear-gradient(180deg,var(--bg),var(--bg2));background-attachment:fixed}
 h1,h3,.ttl{font-family:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif}
 h1,h3{margin:0 0 6px}
-button{font:inherit;color:inherit;cursor:pointer}
+button{font:inherit;color:inherit;cursor:pointer;transition:transform .12s,opacity .12s,background .12s}
+button:active:not(:disabled){transform:scale(.97)}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.w{max-width:760px;margin:0 auto;padding:14px 14px 40px}
+.w{max-width:780px;margin:0 auto;padding:14px 14px 90px}
 .pn{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;margin-top:20px}
 .mu{color:var(--mute)}.sm{font-size:13px}
 .top{display:flex;align-items:center;gap:12px;padding:6px 0}
 .top>div:nth-child(2){flex:1;min-width:0}
 .mk{flex:none;width:38px;height:44px;display:grid;place-items:center;font:800 15px "Bricolage Grotesque",sans-serif;color:var(--accInk);background:linear-gradient(160deg,#FFD878,#F2A81D 60%,#E8791A);clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%);padding-bottom:6px}
 .ttl{font-size:21px;font-weight:800;line-height:1.1}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-.stats div{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 8px;text-align:center;font-size:12px;font-weight:700;color:var(--mute)}
-.stats b{display:block;font:800 26px "Bricolage Grotesque",sans-serif;color:var(--accT)}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px;margin-top:14px}
-.tab{border:0;background:none;border-radius:999px;padding:10px;font-weight:800}
+
+/* statistik */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 6px;text-align:center;font-size:11.5px;font-weight:700;color:var(--mute);line-height:1.25}
+.stats b{display:block;font:800 26px "Bricolage Grotesque",sans-serif;color:var(--accT);margin-bottom:2px}
+@media (max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* tab menempel di atas */
+.tabs{position:sticky;top:max(8px,env(safe-area-inset-top,0px));z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px;margin-top:14px;box-shadow:0 8px 24px #0006}
+.tab{border:0;background:none;border-radius:999px;padding:9px 4px;font-weight:800;font-size:13.5px;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
 .tab[aria-pressed="true"]{background:var(--acc);color:var(--accInk)}
+.tab i{font-style:normal;font-size:15px}
+.bdg{background:var(--red);color:#fff;border-radius:999px;font-size:10.5px;padding:0 6px;line-height:17px}
+@media (max-width:420px){.tab span.lb{display:none}.tab[aria-pressed="true"] span.lb{display:inline}}
+
 .chips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--card2);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px}
 .chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
@@ -41,18 +52,25 @@ button{font:inherit;color:inherit;cursor:pointer}
 textarea.fi{min-height:90px;resize:vertical}
 input[type=file].fi{padding:9px 10px}
 input[type=file]::file-selector-button{border:0;border-radius:999px;background:var(--acc);color:var(--accInk);font:800 13px "Plus Jakarta Sans",sans-serif;padding:8px 14px;margin-right:10px;cursor:pointer}
+.sr{margin-top:12px;border-radius:999px;padding:11px 18px}
 .pb{border:0;border-radius:999px;background:var(--acc);color:var(--accInk);font-weight:800;padding:12px 18px}
+.pb.wide{width:100%;margin-top:14px}
 .ob{border:1px solid var(--line);border-radius:999px;background:none;font-weight:700;padding:10px 16px}
 .ob.dg{color:var(--red);border-color:var(--red)}
-.pb:disabled{opacity:.6;cursor:wait}
+.ob.sm2{padding:7px 13px;font-size:13px}
+.pb:disabled,.ob:disabled{opacity:.6;cursor:wait}
+
+/* kartu item */
 .it{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px;margin-top:10px}
+.it.off{opacity:.62}
 .th{flex:none;width:68px;height:68px;border-radius:14px;object-fit:cover;background:var(--card2);display:grid;place-items:center;font-size:28px}
-.in{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.in b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.in{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.in b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pr{color:var(--ok);font-weight:800}.pr s{color:var(--mute);font-weight:500}
 .ac{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:520px){.it:not(.col){flex-wrap:wrap}.it:not(.col) .ac{width:100%;justify-content:flex-end}}
 .tg{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:1px 9px;background:var(--card2);border:1px solid var(--line);color:var(--accT)}
-.tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;border:1px solid}
-.tag.ok{color:var(--ok)}.tag.wt{color:var(--wt)}
+.tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;border:1px solid;white-space:nowrap}
+.tag.ok{color:var(--ok)}.tag.wt{color:var(--wt)}.tag.red{color:var(--red)}.tag.off{color:var(--mute)}
 .msg{color:var(--mute);font-size:13px;min-height:20px;margin:10px 0 0}
 .ck{display:flex;gap:8px;align-items:center;margin:14px 0}
 .ig,.phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:8px}
@@ -71,14 +89,33 @@ input[type=file]::file-selector-button{border:0;border-radius:999px;background:v
 .tr .ca input{width:20px;height:20px;accent-color:var(--acc)}
 .tr .ac{grid-column:1/-1}
 @media (min-width:620px){.tr{grid-template-columns:1fr 1.3fr .7fr auto auto;align-items:end}.tr .ac{grid-column:auto;flex-wrap:nowrap}}
+
+/* voucher */
+.vc{flex:none;width:76px;min-height:68px;border-radius:14px;display:grid;place-items:center;text-align:center;padding:6px;font:800 19px/1.05 "Bricolage Grotesque",sans-serif;color:var(--accInk);background:linear-gradient(160deg,#FFD878,#F2A81D 70%,#E8791A);position:relative}
+.vc small{display:block;font:800 10px "Plus Jakarta Sans",sans-serif;opacity:.8;margin-top:2px}
+.vc.dead{background:var(--card2);color:var(--mute)}
+.code{font:800 16px "Bricolage Grotesque",sans-serif;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.cp{border:1px solid var(--line);background:none;border-radius:999px;font-size:11px;font-weight:800;padding:1px 9px;color:var(--mute)}
+.bar{height:6px;border-radius:999px;background:var(--card2);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:999px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.empty{text-align:center;padding:34px 14px;color:var(--mute)}
+.empty b{display:block;font:800 17px "Bricolage Grotesque",sans-serif;color:var(--ink);margin-bottom:4px}
+
+/* dialog + toast */
 dialog{border:1px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);padding:0;width:min(480px,calc(100vw - 20px));max-height:calc(100dvh - 20px);overflow:auto}
 dialog::backdrop{background:#030618c0}
 .db{padding:18px;display:grid;gap:4px}.db .ob{margin-top:6px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:50;background:var(--ink);color:var(--bg);font-weight:700;font-size:14px;padding:11px 20px;border-radius:999px;max-width:calc(100vw - 28px);text-align:center;transition:opacity .2s,transform .2s}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast.er{background:var(--red);color:#fff}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="w" id="app"></div>
 <dialog id="dlg"><div class="db" id="db"></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
 <script>
 /* Samakan dengan index.html. Jangan pernah isi kunci service_role / secret. */
 const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";
@@ -91,12 +128,15 @@ const fmt=s=>String(s||"").split(",").filter(Boolean).map(esc).join(", ");
 const CATN={p:"Stok Akun",f:"Flash Sale",n:"Nokos",r:"Rental",t:"Partner"};
 const CATE={p:"🛍️",f:"⚡",n:"📱",r:"💼",t:"🤝"};
 const MAXI=7;
-let tab="produk",pf="all",rf="wait",PR=[],RE=[],TP=[],tpErr="",imgs=[];
+let tab="produk",pf="all",pq="",rf="wait",vf="all",PR=[],RE=[],TP=[],VC=[],tpErr="",vcErr="",imgs=[];
 const imgsOf=p=>Array.isArray(p.images)&&p.images.length?p.images:(p.image_url?[p.image_url]:[]);
 const ready=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
 const sb=ready?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 const say=h=>{$("app").innerHTML=h};
 const brand=`<div class="top"><div class="mk" aria-hidden="true">SS</div><div><div class="ttl">Satria Store</div><div class="mu sm">Panel admin</div></div>`;
+
+let tt;
+function toast(t,bad){const e=$("toast");e.textContent=t;e.className="on"+(bad?" er":"");clearTimeout(tt);tt=setTimeout(()=>{e.className=""},bad?4200:2200)}
 
 function loginView(msg=""){
  say(`${brand}</div><section class="pn"><h1>Masuk admin</h1><p class="mu">Pakai akun admin Supabase.</p>
@@ -113,40 +153,62 @@ async function gate(){
  if(error||!data||!data.length){await sb.auth.signOut();return loginView(error?"Gagal cek admin: "+error.message:"Akun ini bukan admin (UID: "+uid+")")}
  await load();panel()}
 async function load(){
- const [a,b,c]=await Promise.all([
+ const [a,b,c,d]=await Promise.all([
   sb.from("products").select("*").order("id",{ascending:false}),
   sb.from("reports").select("*").order("id",{ascending:false}),
-  sb.from("topups").select("*").order("sort").order("game").order("amount")]);
- PR=a.data||[];RE=b.data||[];TP=c.data||[];tpErr=c.error?c.error.message:""}
+  sb.from("topups").select("*").order("sort").order("game").order("amount"),
+  sb.from("vouchers").select("*").order("id",{ascending:false})]);
+ PR=a.data||[];RE=b.data||[];TP=c.data||[];VC=d.data||[];
+ tpErr=c.error?c.error.message:"";vcErr=d.error?d.error.message:""}
+
+/* status voucher: [label, kelas tag] */
+const vst=v=>{
+ if(!v.active)return["Nonaktif","off"];
+ if(v.expires_at&&new Date(v.expires_at)<new Date())return["Kedaluwarsa","red"];
+ if(v.quota!=null&&v.used>=v.quota)return["Habis","red"];
+ return["Aktif","ok"]};
+const vOn=v=>vst(v)[1]==="ok";
+const vVal=v=>v.kind==="pct"?v.value+"%":rp(v.value);
 
 function panel(){
- const nw=RE.filter(r=>r.status==="wait").length,na=RE.filter(r=>r.status==="ok").length;
+ const nw=RE.filter(r=>r.status==="wait").length,na=RE.filter(r=>r.status==="ok").length,nv=VC.filter(vOn).length;
  say(`${brand}<button class="ob" id="out">Keluar</button></div>
- <div class="stats"><div><b>${PR.length}</b>Produk</div><div><b>${nw}</b>Laporan menunggu</div><div><b>${na}</b>Laporan disetujui</div></div>
- <div class="tabs"><button class="tab" data-t="produk" aria-pressed="${tab==="produk"}">Produk</button><button class="tab" data-t="topup" aria-pressed="${tab==="topup"}">Top Up</button><button class="tab" data-t="laporan" aria-pressed="${tab==="laporan"}">Laporan${nw?` (${nw})`:""}</button></div><div id="body"></div>`);
+ <div class="stats"><div><b>${PR.length}</b>Produk</div><div><b>${nv}</b>Voucher aktif</div><div><b>${nw}</b>Laporan menunggu</div><div><b>${na}</b>Laporan disetujui</div></div>
+ <div class="tabs" role="group" aria-label="Menu admin">
+  <button class="tab" data-t="produk" aria-pressed="${tab==="produk"}"><i aria-hidden="true">🛍️</i><span class="lb">Produk</span></button>
+  <button class="tab" data-t="topup" aria-pressed="${tab==="topup"}"><i aria-hidden="true">💎</i><span class="lb">Top Up</span></button>
+  <button class="tab" data-t="voucher" aria-pressed="${tab==="voucher"}"><i aria-hidden="true">🎟️</i><span class="lb">Voucher</span></button>
+  <button class="tab" data-t="laporan" aria-pressed="${tab==="laporan"}"><i aria-hidden="true">📋</i><span class="lb">Laporan</span>${nw?`<span class="bdg">${nw}</span>`:""}</button></div><div id="body"></div>`);
  $("out").onclick=async()=>{await sb.auth.signOut();loginView()};
- document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;panel()});
- tab==="produk"?prodView():tab==="topup"?tuView():repView()}
+ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;panel();window.scrollTo({top:0})});
+ tab==="produk"?prodView():tab==="topup"?tuView():tab==="voucher"?vcView():repView()}
 
+/* ===== TAB PRODUK ===== */
 function prodView(){
  const cats=[["all","Semua",PR.length],...Object.entries(CATN).map(([k,n])=>[k,n,PR.filter(p=>p.category===k).length])];
- const list=PR.filter(p=>pf==="all"||p.category===pf);
- $("body").innerHTML=`<button class="pb" id="add" style="width:100%;margin:14px 0 0">+ Tambah produk</button>
- <div class="chips">${cats.map(([k,n,c])=>`<button class="chip" data-pf="${k}" aria-pressed="${pf===k}">${n} (${c})</button>`).join("")}</div>`+
- (list.map(p=>{const im=imgsOf(p);return `<div class="it">${im[0]?`<img class="th" src="${esc(im[0])}" alt="">`:`<div class="th" aria-hidden="true">${CATE[p.category]||"🎮"}</div>`}
-  <div class="in"><b>${esc(p.title)}</b><span class="mu sm"><span class="tg">${CATN[p.category]||"-"}</span> ${esc(p.game||"")}${im.length>1?` · ${im.length} foto`:""}${p.active?"":" · disembunyikan"}</span><span class="pr">${p.category==="t"?"Partner":rp(p.price)}${p.old_price?` <s>${rp(p.old_price)}</s>`:""}</span></div>
-  <div class="ac"><button class="ob" data-e="${p.id}">Edit</button><button class="ob dg" data-d="${p.id}">Hapus</button></div></div>`}).join("")||`<p class="mu" style="margin-top:14px">Belum ada produk di kategori ini.</p>`);
+ $("body").innerHTML=`<button class="pb wide" id="add">+ Tambah produk</button>
+ <div class="chips">${cats.map(([k,n,c])=>`<button class="chip" data-pf="${k}" aria-pressed="${pf===k}">${n} (${c})</button>`).join("")}</div>
+ <input class="fi sr" id="q" type="search" placeholder="Cari judul atau game…" aria-label="Cari produk" value="${esc(pq)}"><div id="pl"></div>`;
  $("add").onclick=()=>form(pf!=="all"?{category:pf,active:true}:null);
  $("body").querySelectorAll("[data-pf]").forEach(b=>b.onclick=()=>{pf=b.dataset.pf;prodView()});
- $("body").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>form(PR.find(p=>p.id==b.dataset.e)));
- $("body").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
-  const p=PR.find(x=>x.id==b.dataset.d);
-  if(!confirm("Hapus produk ini?"))return;
-  const {error}=await sb.from("products").delete().eq("id",b.dataset.d);
-  if(error)return alert("Gagal: "+error.message);
-  const paths=imgsOf(p).map(u=>u.split("/produk/")[1]).filter(Boolean);
-  if(paths.length)sb.storage.from("produk").remove(paths).catch(()=>{});
-  await load();panel()})}
+ const draw=()=>{
+  const s=pq.trim().toLowerCase();
+  const list=PR.filter(p=>(pf==="all"||p.category===pf)&&(!s||(p.title+" "+(p.game||"")).toLowerCase().includes(s)));
+  $("pl").innerHTML=list.map(p=>{const im=imgsOf(p);return `<div class="it${p.active?"":" off"}">${im[0]?`<img class="th" src="${esc(im[0])}" alt="" loading="lazy">`:`<div class="th" aria-hidden="true">${CATE[p.category]||"🎮"}</div>`}
+  <div class="in"><b>${esc(p.title)}</b><span class="mu sm"><span class="tg">${CATN[p.category]||"-"}</span> ${esc(p.game||"")}${im.length>1?` · ${im.length} foto`:""}${p.active?"":" · disembunyikan"}</span><span class="pr">${p.category==="t"?"Partner":rp(p.price)}${p.old_price?` <s>${rp(p.old_price)}</s>`:""}</span></div>
+  <div class="ac"><button class="ob" data-e="${p.id}">Edit</button><button class="ob dg" data-d="${p.id}">Hapus</button></div></div>`}).join("")||
+  `<div class="empty"><b>${s?"Tidak ketemu":"Belum ada produk"}</b>${s?"Coba kata kunci lain.":"Tekan “+ Tambah produk” untuk mulai."}</div>`;
+  $("pl").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>form(PR.find(p=>p.id==b.dataset.e)));
+  $("pl").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
+   const p=PR.find(x=>x.id==b.dataset.d);
+   if(!confirm("Hapus produk ini?"))return;
+   const {error}=await sb.from("products").delete().eq("id",b.dataset.d);
+   if(error)return toast("Gagal hapus: "+error.message,1);
+   const paths=imgsOf(p).map(u=>u.split("/produk/")[1]).filter(Boolean);
+   if(paths.length)sb.storage.from("produk").remove(paths).catch(()=>{});
+   await load();panel();toast("Produk dihapus")})};
+ $("q").oninput=()=>{pq=$("q").value;draw()};
+ draw()}
 
 function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();
  im.onload=()=>{const k=Math.min(1,1000/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
@@ -201,13 +263,13 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
    const row={title:t,game:$("f_g").value.trim()||null,category:cat,seller:$("f_s").value.trim()||null,price:pr,
     old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,images:urls,image_url:urls[0]||null,active:$("f_a").checked};
    const r=p.id?await sb.from("products").update(row).eq("id",p.id):await sb.from("products").insert(row);if(r.error)throw r.error;
-   close();await load();panel()
+   close();await load();panel();toast("Produk tersimpan")
   }catch(e){fm.textContent="Gagal: "+e.message;$("sv").disabled=false}};
  $("dlg").showModal()}
 
 /* ===== TAB TOP UP: nominal dan harga top up (tabel "topups") ===== */
 function tuView(){
- const tm=(t,ok)=>{const m=$("tm");if(m){m.textContent=t;m.style.color=ok?"var(--ok)":"var(--red)"}};
+ const tm=(t,ok)=>{const m=$("tm");if(m){m.textContent=t;m.style.color=ok?"var(--ok)":"var(--red)"}if(t)toast(t,!ok)};
  const games=[...new Set(TP.map(r=>r.game))],secs=[...new Set(TP.map(r=>r.section).filter(Boolean))];
  const addForm=`<section class="pn" style="margin-top:14px"><h3>Tambah nominal top up</h3>
  <p class="mu sm" style="margin:0">Harga 0 = tampil "Tanya harga" di toko. Menulis nama game baru otomatis membuat kartu game baru. Urutan game: angka kecil tampil lebih dulu.</p>
@@ -225,9 +287,9 @@ function tuView(){
  <p class="msg" id="tm" role="status"></p><button class="pb" id="n_add">Tambah</button></section>`;
  let listHtml;
  if(tpErr)listHtml=`<section class="pn"><h3>Tabel top up belum siap</h3><p class="mu">Jalankan file topups.sql di Supabase (SQL Editor) dulu, lalu muat ulang halaman ini.</p><p class="mu sm">Detail: ${esc(tpErr)}</p></section>`;
- else if(!TP.length)listHtml=`<p class="mu" style="margin-top:14px">Belum ada nominal. Tambahkan lewat form di atas.</p>`;
+ else if(!TP.length)listHtml=`<div class="empty"><b>Belum ada nominal</b>Tambahkan lewat form di atas.</div>`;
  else listHtml=games.map(g=>{const l=TP.filter(r=>r.game===g);
-  return `<div class="gh"><span>${esc(g)}</span><button class="ob dg" data-dg="${esc(g)}">Hapus game</button></div>`+
+  return `<div class="gh"><span>${esc(g)}</span><button class="ob dg sm2" data-dg="${esc(g)}">Hapus game</button></div>`+
   l.map(r=>`<div class="tr" data-id="${r.id}">
    <div style="grid-column:1/-1"><label>Nama paket (kosongkan untuk nominal biasa)</label><input class="fi" maxlength="50" data-f="label" value="${esc(r.label||"")}"></div>
    <div style="grid-column:1/-1"><label>Bagian (mis. Diamond, Memberships, Cards &amp; Passes)</label><input class="fi" maxlength="30" data-f="section" value="${esc(r.section||"")}"></div>
@@ -262,36 +324,115 @@ function tuView(){
  $("body").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
   if(!confirm("Hapus nominal ini?"))return;
   const {data,error}=await sb.from("topups").delete().eq("id",b.dataset.d).select();
-  if(error)return alert("Gagal: "+error.message);
-  if(!data||!data.length)return alert("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.");
-  await refresh()});
+  if(error)return toast("Gagal: "+error.message,1);
+  if(!data||!data.length)return toast("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.",1);
+  await refresh();toast("Nominal dihapus")});
  $("body").querySelectorAll("[data-dg]").forEach(b=>b.onclick=async()=>{
   if(!confirm("Hapus SEMUA nominal "+b.dataset.dg+"?"))return;
   const {data,error}=await sb.from("topups").delete().eq("game",b.dataset.dg).select();
-  if(error)return alert("Gagal: "+error.message);
-  if(!data||!data.length)return alert("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.");
-  await refresh()})}
+  if(error)return toast("Gagal: "+error.message,1);
+  if(!data||!data.length)return toast("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.",1);
+  await refresh();toast("Game dihapus")})}
 
+/* ===== TAB VOUCHER (tabel "vouchers") ===== */
+function vcView(){
+ if(vcErr){$("body").innerHTML=`<section class="pn" style="margin-top:14px"><h3>Tabel voucher belum siap</h3><p class="mu">Jalankan file vouchers.sql di Supabase (SQL Editor) dulu, lalu muat ulang halaman ini.</p><p class="mu sm">Detail: ${esc(vcErr)}</p></section>`;return}
+ const cnt=k=>k==="all"?VC.length:VC.filter(v=>k==="on"?vOn(v):!vOn(v)).length;
+ const list=VC.filter(v=>vf==="all"||(vf==="on"?vOn(v):!vOn(v)));
+ $("body").innerHTML=`<button class="pb wide" id="vadd">+ Buat voucher</button>
+ <div class="chips">${[["all","Semua"],["on","Aktif"],["off","Tidak aktif"]].map(([k,n])=>`<button class="chip" data-vf="${k}" aria-pressed="${vf===k}">${n} (${cnt(k)})</button>`).join("")}</div>`+
+ (list.map(v=>{const [sl,sc]=vst(v),dead=sc!=="ok";
+  const pct=v.quota?Math.min(100,Math.round(v.used/v.quota*100)):0;
+  const info=[v.kind==="pct"&&v.max_discount?"maks "+rp(v.max_discount):"",v.min_order?"min. belanja "+rp(v.min_order):"",v.expires_at?"sampai "+new Date(v.expires_at).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):"tanpa batas waktu"].filter(Boolean).join(" · ");
+  return `<div class="it${dead?" off":""}"><div class="vc${dead?" dead":""}" aria-hidden="true"><div>${esc(vVal(v))}<small>${v.kind==="pct"?"DISKON":"POTONGAN"}</small></div></div>
+  <div class="in"><span class="code">${esc(v.code)}<button class="cp" data-cp="${esc(v.code)}" aria-label="Salin kode ${esc(v.code)}">Salin</button></span>
+   <span class="mu sm">${esc(info)}</span>
+   <span class="mu sm"><span class="tag ${sc}">${sl}</span> Terpakai ${v.used||0}${v.quota?" dari "+v.quota:" kali"}${v.note?" · "+esc(v.note):""}</span>
+   ${v.quota?`<div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>`:""}</div>
+  <div class="ac"><button class="ob" data-ve="${v.id}">Edit</button><button class="ob" data-vt="${v.id}">${v.active?"Matikan":"Aktifkan"}</button><button class="ob dg" data-vd="${v.id}">Hapus</button></div></div>`}).join("")||
+  `<div class="empty"><b>${VC.length?"Tidak ada voucher di sini":"Belum ada voucher"}</b>${VC.length?"Ganti filter di atas.":"Tekan “+ Buat voucher” untuk membuat kode diskon pertama."}</div>`);
+ $("vadd").onclick=()=>vform(null);
+ $("body").querySelectorAll("[data-vf]").forEach(b=>b.onclick=()=>{vf=b.dataset.vf;vcView()});
+ $("body").querySelectorAll("[data-ve]").forEach(b=>b.onclick=()=>vform(VC.find(v=>v.id==b.dataset.ve)));
+ $("body").querySelectorAll("[data-cp]").forEach(b=>b.onclick=async()=>{
+  try{await navigator.clipboard.writeText(b.dataset.cp);toast("Kode "+b.dataset.cp+" disalin")}catch(e){toast("Tidak bisa menyalin otomatis",1)}});
+ $("body").querySelectorAll("[data-vt]").forEach(b=>b.onclick=async()=>{
+  const v=VC.find(x=>x.id==b.dataset.vt);b.disabled=true;
+  const {data,error}=await sb.from("vouchers").update({active:!v.active}).eq("id",v.id).select();
+  if(error||!data||!data.length){b.disabled=false;return toast(error?"Gagal: "+error.message:"Tidak tersimpan. Pastikan akun ini terdaftar di tabel admins.",1)}
+  await load();panel();toast(v.active?"Voucher dimatikan":"Voucher diaktifkan")});
+ $("body").querySelectorAll("[data-vd]").forEach(b=>b.onclick=async()=>{
+  const v=VC.find(x=>x.id==b.dataset.vd);
+  if(!confirm("Hapus voucher "+v.code+"?"))return;
+  const {data,error}=await sb.from("vouchers").delete().eq("id",v.id).select();
+  if(error)return toast("Gagal: "+error.message,1);
+  if(!data||!data.length)return toast("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.",1);
+  await load();panel();toast("Voucher dihapus")})}
+
+const toLocalDT=iso=>{if(!iso)return"";const d=new Date(iso),z=n=>String(n).padStart(2,"0");
+ return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())};
+const rndCode=()=>{const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<8;i++)s+=a[Math.floor(Math.random()*a.length)];return s};
+
+function vform(p){p=p||{kind:"pct",active:true,min_order:0};const v=k=>esc(p[k]??"");
+ $("db").innerHTML=`<h3>${p.id?"Edit":"Buat"} voucher</h3>
+ <label class="fl" for="v_c">Kode voucher</label>
+ <div style="display:flex;gap:8px"><input class="fi" id="v_c" maxlength="20" autocomplete="off" autocapitalize="characters" placeholder="HEMAT10" value="${v("code")}" style="text-transform:uppercase"><button type="button" class="ob" id="v_r">Acak</button></div>
+ <p class="mu sm" style="margin:6px 0 0">Huruf, angka, strip (-) atau garis bawah (_), 3–20 karakter. Huruf besar/kecil dianggap sama.</p>
+ <div class="row2"><div><label class="fl" for="v_k">Jenis potongan</label><select class="fi" id="v_k"><option value="pct"${p.kind==="pct"?" selected":""}>Persen (%)</option><option value="nom"${p.kind==="nom"?" selected":""}>Nominal (Rp)</option></select></div>
+ <div><label class="fl" for="v_v" id="lv">Besar diskon (%)</label><input class="fi" id="v_v" type="number" min="1" inputmode="numeric" value="${v("value")}"></div></div>
+ <div id="v_mx"><label class="fl" for="v_m">Maksimal potongan (Rp, opsional)</label><input class="fi" id="v_m" type="number" min="1" inputmode="numeric" placeholder="Kosong = tanpa batas" value="${v("max_discount")}"></div>
+ <label class="fl" for="v_o">Minimal belanja (Rp)</label><input class="fi" id="v_o" type="number" min="0" inputmode="numeric" placeholder="0" value="${p.min_order?v("min_order"):""}">
+ <div class="row2"><div><label class="fl" for="v_q">Kuota pemakaian</label><input class="fi" id="v_q" type="number" min="1" inputmode="numeric" placeholder="Tanpa batas" value="${v("quota")}"></div>
+ <div><label class="fl" for="v_e">Berlaku sampai</label><input class="fi" id="v_e" type="datetime-local" value="${toLocalDT(p.expires_at)}"></div></div>
+ ${p.id?`<p class="mu sm" style="margin:6px 0 0">Sudah terpakai: <b>${p.used||0}</b> kali.${p.quota?"":""}</p>`:""}
+ <label class="fl" for="v_n">Catatan internal (opsional)</label><input class="fi" id="v_n" maxlength="80" placeholder="Mis. promo gajian" value="${v("note")}">
+ <label class="ck"><input type="checkbox" id="v_a"${p.active?" checked":""}> Voucher aktif</label>
+ <p class="msg" id="fm" role="status"></p><button class="pb" id="sv">Simpan</button><button class="ob" id="cx">Batal</button>`;
+ const kind=()=>{const pc=$("v_k").value==="pct";$("lv").textContent=pc?"Besar diskon (%)":"Besar potongan (Rp)";$("v_mx").style.display=pc?"":"none";$("v_v").max=pc?100:"";$("v_v").placeholder=pc?"10":"5000"};
+ kind();$("v_k").onchange=kind;
+ $("v_r").onclick=()=>{$("v_c").value=rndCode()};
+ $("cx").onclick=()=>$("dlg").close();
+ $("sv").onclick=async()=>{const fm=$("fm");
+  const code=$("v_c").value.trim().toUpperCase(),k=$("v_k").value,val=parseInt($("v_v").value,10);
+  const mx=parseInt($("v_m").value,10)||null,mo=parseInt($("v_o").value||"0",10),q=$("v_q").value===""?null:parseInt($("v_q").value,10);
+  const ev=$("v_e").value,ex=ev?new Date(ev):null;
+  if(!/^[A-Z0-9_-]{3,20}$/.test(code))return fm.textContent="Kode harus 3–20 karakter: huruf, angka, - atau _.";
+  if(!(val>0))return fm.textContent="Besar diskon harus lebih dari 0.";
+  if(k==="pct"&&val>100)return fm.textContent="Diskon persen maksimal 100.";
+  if(isNaN(mo)||mo<0)return fm.textContent="Minimal belanja tidak boleh minus.";
+  if(q!==null&&!(q>0))return fm.textContent="Kuota harus lebih dari 0, atau kosongkan.";
+  if(ex&&isNaN(ex.getTime()))return fm.textContent="Tanggal berlaku tidak valid.";
+  if(VC.some(x=>x.id!==p.id&&x.code.toUpperCase()===code))return fm.textContent="Kode "+code+" sudah dipakai voucher lain.";
+  $("sv").disabled=true;fm.textContent="Menyimpan…";
+  const row={code,kind:k,value:val,max_discount:k==="pct"?mx:null,min_order:mo,quota:q,expires_at:ex?ex.toISOString():null,note:$("v_n").value.trim()||null,active:$("v_a").checked};
+  const r=p.id?await sb.from("vouchers").update(row).eq("id",p.id).select():await sb.from("vouchers").insert(row).select();
+  if(r.error){$("sv").disabled=false;return fm.textContent=r.error.code==="23505"?"Kode "+code+" sudah dipakai voucher lain.":"Gagal: "+r.error.message}
+  if(!r.data||!r.data.length){$("sv").disabled=false;return fm.textContent="Tidak tersimpan. Pastikan akun ini terdaftar di tabel admins."}
+  $("dlg").close();await load();panel();toast(p.id?"Voucher diperbarui":"Voucher dibuat")};
+ $("dlg").showModal()}
+
+/* ===== TAB LAPORAN ===== */
 async function repView(){
  const cnt=k=>k==="all"?RE.length:RE.filter(r=>r.status===k).length;
  const list=RE.filter(r=>rf==="all"||r.status===rf);
  $("body").innerHTML=`<div class="chips">${[["wait","Menunggu"],["ok","Disetujui"],["all","Semua"]].map(([k,n])=>`<button class="chip" data-rf="${k}" aria-pressed="${rf===k}">${n} (${cnt(k)})</button>`).join("")}</div>`+
- (list.map(r=>{const ps=r.proof_paths||[];return `<div class="it" style="flex-direction:column;align-items:stretch">
+ (list.map(r=>{const ps=r.proof_paths||[];return `<div class="it col" style="flex-direction:column;align-items:stretch">
   <div><span class="tag ${r.status==="ok"?"ok":"wt"}">${r.status==="ok"?"DISETUJUI":"MENUNGGU"}</span> <b>#${r.id} ${esc(r.title)}</b></div>
   <div class="mu">WA pelaku: ${fmt(r.wa)}${r.game_id?"<br>ID game: "+fmt(r.game_id):""}</div>
   ${r.story?`<p class="mu" style="margin:4px 0">${esc(r.story)}</p>`:""}
   <div class="mu sm">${r.created_at?new Date(r.created_at).toLocaleString("id-ID"):""}</div>
   ${ps.length?`<div class="phs" data-rid="${r.id}"><span class="mu sm">Memuat foto…</span></div>`:r.proof_url?`<div class="phs"><a class="ph" href="${esc(r.proof_url)}" target="_blank" rel="noopener"><img src="${esc(r.proof_url)}" alt="Foto bukti"></a></div>`:`<p class="mu sm" style="margin:4px 0">Tanpa foto bukti.</p>`}
-  <div class="ac" style="margin-top:6px">${r.status==="wait"?`<button class="pb" data-a="ok" data-id="${r.id}">Setujui</button>`:""}<button class="ob dg" data-a="del" data-id="${r.id}">Hapus</button></div></div>`}).join("")||`<p class="mu" style="margin-top:14px">Tidak ada laporan di sini.</p>`);
+  <div class="ac" style="margin-top:6px">${r.status==="wait"?`<button class="pb" data-a="ok" data-id="${r.id}">Setujui</button>`:""}<button class="ob dg" data-a="del" data-id="${r.id}">Hapus</button></div></div>`}).join("")||`<div class="empty"><b>Tidak ada laporan di sini</b>Laporan baru dari pengunjung akan muncul di tab ini.</div>`);
  $("body").querySelectorAll("[data-rf]").forEach(b=>b.onclick=()=>{rf=b.dataset.rf;repView()});
  $("body").querySelectorAll("[data-a]").forEach(b=>b.onclick=async()=>{const id=b.dataset.id,r=RE.find(x=>x.id==id);let q;
   if(b.dataset.a==="ok"){
    if(!confirm("Setujui laporan ini? Laporan dan foto buktinya akan tampil di publik. Pastikan foto tidak memuat data pribadi pelapor."))return;
    q=sb.from("reports").update({status:"ok"}).eq("id",id)}
   else{if(!confirm("Hapus laporan ini beserta foto buktinya?"))return;q=sb.from("reports").delete().eq("id",id)}
-  const {error}=await q;if(error)return alert("Gagal: "+error.message);
+  const {error}=await q;if(error)return toast("Gagal: "+error.message,1);
   if(b.dataset.a==="del"&&r&&(r.proof_paths||[]).length)sb.storage.from("bukti").remove(r.proof_paths).catch(()=>{});
-  await load();panel()});
+  const wasOk=b.dataset.a==="ok";
+  await load();panel();toast(wasOk?"Laporan disetujui":"Laporan dihapus")});
  const paths=[...new Set(list.flatMap(r=>r.proof_paths||[]))];
  if(paths.length){
   const {data}=await sb.storage.from("bukti").createSignedUrls(paths,3600);
