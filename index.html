@@ -39,6 +39,9 @@ a{color:inherit;text-decoration:none}
 .sl{display:flex;transition:transform .5s}
 .s{position:relative;overflow:hidden;flex:none;width:100%;min-height:190px;padding:24px 22px 30px;display:flex;flex-direction:column;justify-content:center;gap:8px;color:#fff}
 .s::after{content:"";position:absolute;right:-14px;bottom:-26px;width:150px;height:172px;background:#fff;opacity:.08;clip-path:polygon(50% 0,100% 14%,100% 58%,50% 100%,0 58%,0 14%)}
+.s.sb{padding:0;min-height:0;display:block;background:#050a18}
+.s.sb::after{display:none}
+.s.sb img{display:block;width:100%;height:auto}
 .s h2{font-size:clamp(25px,7vw,36px);font-weight:700;line-height:1.1;max-width:11em;position:relative;z-index:1}
 .s p{max-width:20em;font-size:14px;opacity:.92;position:relative;z-index:1}
 .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:6px;justify-content:center;z-index:2}
@@ -82,7 +85,7 @@ hr{border:0;border-top:1px solid var(--line);margin:26px 0 18px}
 dialog{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:0;width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
 dialog::backdrop{background:#050A18c0}
 .db{padding:16px;display:grid;gap:8px}
-.dc{height:150px;border-radius:12px;display:grid;place-items:center;font-size:64px;color:#fff}
+.dc{height:150px;border-radius:12px;display:grid;place-items:center;font-size:64px;color:#fff;overflow:hidden}
 .bt,.pb{display:block;text-align:center;background:var(--fill);color:var(--onf);border:0;padding:13px;font-weight:800;margin-top:6px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
 .bt.al{background:none;border:1px solid var(--line);color:var(--ink);clip-path:none;border-radius:12px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -224,6 +227,7 @@ const ilist=s=>[...new Set(String(s).split(/[\s,;]+/).map(x=>x.replace(/\D/g,"")
 const fmt=s=>String(s||"").split(",").filter(Boolean).map(esc).join(", ");
 const bg=c=>`background:linear-gradient(115deg,${c[0]} 0 58%,${c[1]} 58% 100%)`;
 const slides=[
+ {img:"img/banner.jpg",alt:"Satria JB: cari akun dan jual akun, aman dan bergaransi"},
  {h:"Top up game cepat dan murah",p:"Semua metode bayar: QRIS, e-wallet, bank.",c:["#16306B","#1F4BA3"]},
  {h:"Nokos siap pakai untuk verifikasi",p:"Nomor kosong, proses lewat admin Satria Store.",c:["#0F3D4A","#146B75"]},
  {h:"Jasa amankan akun mulai Rp30rb",p:"Takut akun hilang? Amankan dulu di sini.",c:["#2B2A63","#4743B8"]},
@@ -238,16 +242,16 @@ const mkN=(a,u,s)=>a.map(n=>[n,0,"",u,s]);          /* nominal biasa: [jumlah,ha
 const mkL=(a,s)=>a.map((n,i)=>[i+1,0,n,"",s]);        /* paket bernama: [urutan,harga,nama,"",bagian] */
 const SECO=["Diamond","Memberships","Cards & Passes"];  /* urutan bagian di popup */
 const TU=[
- {g:"Free Fire",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
+ {g:"Free Fire",img:"img/ff.jpg",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
   items:[...mkN([5,12,50,70,140,355,720,1450,2180],"Diamond","Diamond"),
    ...mkL(["Membership Mingguan","Membership Mingguan x2","Membership Mingguan x3","Membership Mingguan x4","Membership Mingguan x5","Membership Bulanan","Membership Bulanan x2","Membership Bulanan x3","Membership Bulanan x4","Membership Bulanan x5"],"Memberships"),
    ...mkL(["BP Card"],"Cards & Passes")]},
- {g:"Mobile Legends",e:"💠",c:["#16306B","#1F4BA3"],need:"ID dan Zone ID Mobile Legends kamu",
+ {g:"Mobile Legends",img:"img/ml.jpg",e:"💠",c:["#16306B","#1F4BA3"],need:"ID dan Zone ID Mobile Legends kamu",
   items:mkN([86,172,257,344,429,514,706,878,1412],"Diamond","Diamond")},
- {g:"Roblox",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
+ {g:"Roblox",img:"img/roblox.jpg",e:"🟥",c:["#2B2A63","#4743B8"],need:"username Roblox kamu (jangan kirim password ke siapa pun)",
   items:mkN([80,400,800,1700,4500],"Robux","Robux")}];
 function tuCard(i){const x=TU[i];
- return `<button class="c" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.e}</div>
+ return `<button class="c" data-tu="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}</div>
  <div class="ci"><span class="g">Top up</span><span class="t">${esc(x.g)}</span><span class="sv">${x.items.length} pilihan</span><span class="p pk" style="margin-top:auto">Pilih paket</span></div></button>`}
 function drawTU(){const h=TU.length?TU.map((_,i)=>tuCard(i)).join(""):`<p class="sub" style="grid-column:1/-1">Top up segera hadir.</p>`;
  $("sTopup").hidden=!TU.length;
@@ -260,7 +264,7 @@ async function loadTopups(){if(!LIVE)return;
  if(error||!data)return;
  const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]],m=new Map();
  data.forEach(d=>{const k=d.game;
-  if(!m.has(k)){const st=TUM[k.toLowerCase()]||{e:"⚡",c:pal[m.size%pal.length],need:"ID akun game kamu"};m.set(k,{g:k,e:st.e,c:st.c,need:st.need,items:[]})}
+  if(!m.has(k)){const st=TUM[k.toLowerCase()]||{e:"⚡",c:pal[m.size%pal.length],need:"ID akun game kamu"};m.set(k,{g:k,e:st.e,img:st.img,c:st.c,need:st.need,items:[]})}
   m.get(k).items.push([d.amount,d.price,d.label,d.unit||"",d.section||(d.label?"Paket":(d.unit||"Nominal"))])});
  TU.length=0;TU.push(...m.values());drawTU()}
 function openTU(i){const x=TU[i],secs=[];
@@ -268,7 +272,7 @@ function openTU(i){const x=TU[i],secs=[];
  secs.sort((a,b)=>{const p=SECO.indexOf(a.n),q=SECO.indexOf(b.n);return (p<0?99:p)-(q<0?99:q)});
  const opt=([a,pr,lb,u])=>{const n=lb||(a.toLocaleString("id-ID")+" "+u),m=encodeURIComponent("Halo admin Satria Store, saya mau "+(lb?"beli "+lb+" ("+x.g+")":"top up "+x.g+" "+n)+".");
   return `<a class="opt" target="_blank" rel="noopener" href="${WA}?text=${m}"><span>${esc(n)}</span><span class="${pr?"p":"sub"}" style="font-size:${pr?16:13}px">${pr?rp(pr):"Tanya harga"}</span></a>`};
- $("db").innerHTML=`<div class="dc" style="${bg(x.c)}" aria-hidden="true">${x.e}</div><span class="g">Top up</span><h3 style="font-size:21px">${esc(x.g)}</h3>
+ $("db").innerHTML=`<div class="dc" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" style="width:100%;height:100%;object-fit:cover">`:x.e}</div><span class="g">Top up</span><h3 style="font-size:21px">${esc(x.g)}</h3>
  <p class="sub">Siapkan ${esc(x.need)}. Pilih paket, lalu lanjut ke WhatsApp admin untuk pembayaran.</p>
  ${secs.map(z=>(secs.length>1?`<h3 style="font-size:16px;margin:10px 0 0;color:var(--acc)">${esc(z.n)}</h3>`:"")+`<div class="opts">${z.l.map(opt).join("")}</div>`).join("")}
  <button class="bt al" id="cl">Tutup</button>`;
@@ -294,9 +298,9 @@ function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
  return `<button class="c" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}</div>
  <div class="ci"><span class="g">${LAB[k]||x.g||""}</span><span class="t">${x.t}</span><span class="sv">${x.s}</span>
  ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
-$("sl").innerHTML=slides.map(s=>`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
+$("sl").innerHTML=slides.map(s=>s.img?`<div class="s sb"><img src="${esc(s.img)}" alt="${esc(s.alt||"")}"></div>`:`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
 $("dots").innerHTML=slides.map(()=>"<i></i>").join("");
-$("info").innerHTML=slides.slice(0,3).map(s=>`<div class="c" style="width:240px;min-height:150px;${bg(s.c)};padding:16px;justify-content:center;color:#fff"><b style="font-size:17px;font-family:var(--d)">${s.h}</b><span style="font-size:13px;margin-top:6px">${s.p}</span></div>`).join("");
+$("info").innerHTML=slides.filter(s=>!s.img).slice(0,3).map(s=>`<div class="c" style="width:240px;min-height:150px;${bg(s.c)};padding:16px;justify-content:center;color:#fff"><b style="font-size:17px;font-family:var(--d)">${s.h}</b><span style="font-size:13px;margin-top:6px">${s.p}</span></div>`).join("");
 function openItem(b){const x=all[+b.dataset.i];show({x,k:x.k})}
 function fill(){const q=$("q").value.toLowerCase();
  const f=a=>a.filter(x=>(x.t+(x.g||"")).toLowerCase().includes(q));
