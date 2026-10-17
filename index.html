@@ -195,6 +195,7 @@ textarea.fi{min-height:90px;resize:vertical}
  <div class="menu">
   <a class="m" href="#/layanan"><span><span class="hot">HOT</span>Top Up All Game</span><i>⚡</i></a>
   <a class="m" href="#/produk" data-f="Nokos"><span>Nokos (nomor kosong)</span><i>📲</i></a>
+  <a class="m" href="#/sold"><span>Akun terjual (arsip)</span><i>✅</i></a>
   <a class="m" href="https://wa.me/6285151949632" target="_blank" rel="noopener"><span>WA Admin</span><i>💬</i></a>
   <a class="m" href="#/laporan"><span>Cek keaslian akun &amp; penjual</span><i>🛡️</i></a>
   <a class="m" href="https://whatsapp.com/channel/0029Vb9JKEZ3gvWVR7nwBB3M" target="_blank" rel="noopener"><span>Saluran WhatsApp</span><i>📢</i></a>
@@ -238,12 +239,16 @@ textarea.fi{min-height:90px;resize:vertical}
  <section class="pn"><h2 style="font-size:22px">⚠ Daftar data bermasalah</h2><p class="sub">Tap kartu laporan untuk melihat detail.</p><div id="rl"></div></section>
 </main>
 <main class="w view" id="v-produk" hidden>
- <section class="pn"><div class="pill">🛍️ Produk</div><h1 class="big">Semua produk.</h1><p class="sub">Pakai kolom cari di atas atau filter di bawah.</p><div id="pf"></div><div class="g2" id="pg"></div></section>
+ <section class="pn"><div class="pill">🛍️ Produk</div><h1 class="big">Semua produk.</h1><p class="sub">Pakai kolom cari di atas atau filter di bawah. <a href="#/sold" style="color:var(--acc);font-weight:700">Lihat akun terjual</a></p><div id="pf"></div><div class="g2" id="pg"></div></section>
 </main>
 <main class="w view" id="v-layanan" hidden>
  <section class="pn"><div class="pill">💼 Layanan</div><h1 class="big">Layanan Satria Store.</h1><p class="sub">Pilih layanan, lalu pesan lewat WhatsApp admin.</p><div id="lv"></div></section>
  <section class="pn" id="topup"><h2 style="font-size:22px">⚡ Top up game</h2><p class="sub">Diamond Free Fire, diamond Mobile Legends, dan Robux Roblox. Pilih game, pilih nominal, lalu lanjut ke WhatsApp admin.</p><div class="g2" id="lt"></div></section>
  <section class="pn"><h2 style="font-size:22px">Rental akun</h2><div class="g2" id="lr"></div></section>
+</main>
+
+<main class="w view" id="v-sold" hidden>
+ <section class="pn"><div class="pill">✅ Terjual</div><h1 class="big">Akun yang sudah terjual.</h1><p class="sub">Arsip akun yang sudah laku. Akun di sini tidak bisa dibeli. <a href="#/produk" style="color:var(--acc);font-weight:700">Lihat stok tersedia</a></p><div class="g2" id="sg"></div></section>
 </main>
 
 <button class="chat" aria-label="Chat admin lewat WhatsApp" onclick="window.open('https://wa.me/6285151949632','_blank','noopener')">💬</button>
@@ -378,8 +383,8 @@ const N=[
  {g:"Nokos",t:"NOKOS TELEGRAM INDONESIA",s:"Admin Satria",p:2500,e:"✈️",c:["#16306B","#1F4BA3"]}];
 const R=[{t:"RENTAL TR 001",s:"Admin Satria",p:65000,e:"🎮",c:["#2B2A63","#4743B8"]},{t:"RENTAL TR 004",s:"Admin Satria",p:50000,e:"🕹️",c:["#4A1E2B","#8A2C3F"]}];
 /* Partner: sengaja kosong. Tambah dari admin (kategori Partner); section otomatis muncul kalau ada isinya. */
-const PT=[];
-if(LIVE){P.length=F.length=N.length=R.length=PROMO.length=0}
+const PT=[],SD=[];
+if(LIVE){P.length=F.length=N.length=R.length=PT.length=SD.length=0}
 const LAB={r:"Rental",t:"Partner resmi",n:"Nokos"};
 const all=[];
 function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
@@ -551,13 +556,13 @@ async function loadProducts(){if(!LIVE)return;
  if(error||!data)return;
  const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]];
  const em={p:"🎮",f:"🔥",r:"🕹️",n:"📲",t:"🤝"};
- P.length=F.length=N.length=R.length=PT.length=0;
- data.sort((a,b)=>(a.sold?1:0)-(b.sold?1:0)).forEach(d=>{const k=["f","r","n","t"].includes(d.category)?d.category:"p";
+ P.length=F.length=N.length=R.length=PT.length=SD.length=0;
+ data.forEach(d=>{const k=["f","r","n","t"].includes(d.category)?d.category:"p";
   let im=d.images;if(typeof im==="string"){try{im=JSON.parse(im)}catch(e){im=[]}}
   im=Array.isArray(im)?im.filter(Boolean):[];
   if(!im.length&&d.image_url)im=[d.image_url];
-  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold};
-  ({p:P,f:F,r:R,n:N,t:PT})[k].push(x)});
+  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold,cat:k};
+  (x.sold?SD:({p:P,f:F,r:R,n:N,t:PT})[k]).push(x)});
  buildCat();fill();route()}
 // ambil laporan dari Supabase (foto bukti sengaja tidak diambil, hanya admin yang melihat)
 async function loadRep(){if(!LIVE)return;
@@ -590,14 +595,17 @@ function drawLayanan(){
  $("lv").querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();$("topup").scrollIntoView()}));
  $("lr").innerHTML=R.length?R.map(x=>card(x,"r")).join(""):`<p class="sub" style="grid-column:1/-1">Belum ada akun rental.</p>`;
  $("lr").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
+function drawSold(){
+ $("sg").innerHTML=SD.length?SD.map(x=>card(x,x.cat)).join(""):`<p class="sub" style="grid-column:1/-1">Belum ada akun terjual.</p>`;
+ $("sg").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
 // router sederhana (hash) agar jalan di GitHub Pages
-const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),layanan:$("v-layanan")};
+const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),layanan:$("v-layanan"),sold:$("v-sold")};
 function route(){const h=location.hash;
- let r=h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":"home";
+ let r=h.startsWith("#/sold")?"sold":h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":"home";
  Object.entries(views).forEach(([k,v])=>v.hidden=k!==r);
  const t=$("tick");if(t)t.hidden=r!=="home";
- if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="layanan")drawLayanan();
- const k=r==="laporan"?3:r==="produk"?1:r==="layanan"?2:0;
+ if(r==="laporan"){drawRep();loadRep().then(drawRep)}if(r==="produk")drawProduk();if(r==="layanan")drawLayanan();if(r==="sold")drawSold();
+ const k=r==="laporan"?3:(r==="produk"||r==="sold")?1:r==="layanan"?2:0;
  document.querySelectorAll(".bn a").forEach((a,i)=>a.classList.toggle("on",i===k));
  const id=h.startsWith("#/")?"":h.slice(1),el=id&&$(id);
  if(el&&r==="home")el.scrollIntoView();else if(!id)window.scrollTo(0,0)}
