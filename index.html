@@ -12,7 +12,7 @@
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#EEF1F7;--card:#fff;--card2:#E7ECF6;--ink:#101A33;--mute:#56627F;--line:#CBD4E5;--acc:#8A5A00;--ok:#0B7A47;--red:#C42B42;--amber:#9A5B00}}
 :root[data-theme="light"]{--bg:#EEF1F7;--card:#fff;--card2:#E7ECF6;--ink:#101A33;--mute:#56627F;--line:#CBD4E5;--acc:#8A5A00;--ok:#0B7A47;--red:#C42B42;--amber:#9A5B00}
-:root[data-theme="dark"]{--bg:#0B1220;--card:#121B30;--card2:#19243F;--ink:#EEF2FA;--mute:#9AA7C2;--line:#27355A;--acc:#F2B33D;--ok:#3BD79C;--red:#F0566A;--amber:#F59E0B}
+:root[data-theme="dark"]{--bg:#0B1220;--card:#121B30;--card2:#19243F;--ink:#EEF2FA;--mute:#9AA7C2;--line:#27355A;--acc:#F2B33D;--ok:#3BD79C;--red:#F0566A;--amber:#9A5B00}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:150px;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.55 "Plus Jakarta Sans",system-ui,sans-serif;padding-bottom:100px}
@@ -248,7 +248,7 @@ textarea.fi{min-height:90px;resize:vertical}
 </main>
 
 <main class="w view" id="v-sold" hidden>
- <section class="pn"><div class="pill">✅ Terjual</div><h1 class="big">Akun yang sudah terjual.</h1><p class="sub">Arsip akun yang sudah laku. Akun di sini tidak bisa dibeli. <a href="#/produk" style="color:var(--acc);font-weight:700">Lihat stok tersedia</a></p><div class="g2" id="sg"></div></section>
+ <section class="pn"><div class="pill">✅ Terjual</div><h1 class="big">Akun yang sudah terjual.</h1><p class="sub">Arsip akun yang sudah laku, lengkap dengan bukti transaksi. Tap akun untuk melihat buktinya. Akun di sini tidak bisa dibeli. <a href="#/produk" style="color:var(--acc);font-weight:700">Lihat stok tersedia</a></p><div class="g2" id="sg"></div></section>
 </main>
 
 <button class="chat" aria-label="Chat admin lewat WhatsApp" onclick="window.open('https://wa.me/6285151949632','_blank','noopener')">💬</button>
@@ -389,7 +389,7 @@ const LAB={r:"Rental",t:"Partner resmi",n:"Nokos"};
 const all=[];
 function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
  return `<button class="c${x.sold?" sold":""}" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}${x.sold?`<span class="sd"><span>SOLD</span></span>`:""}</div>
- <div class="ci"><span class="g">${LAB[k]||x.g||""}</span><span class="t">${x.t}</span><span class="sv">${x.s}</span>
+ <div class="ci"><span class="g">${LAB[k]||x.g||""}</span><span class="t">${x.t}</span><span class="sv">${x.s}${x.sold&&x.proofs&&x.proofs.length?" · 📎 "+x.proofs.length+" bukti":""}</span>
  ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${x.sold?"Terjual":k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
 $("sl").innerHTML=slides.map(s=>s.img?`<div class="s sb"><img src="${esc(s.img)}" alt="${esc(s.alt||"")}" draggable="false"></div>`:`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
 $("dots").innerHTML=slides.map(()=>"<i></i>").join("");
@@ -408,7 +408,7 @@ function show({x,k}){
  $("db").innerHTML=`${imgs.length?`<div class="gal"><div class="gs" id="gs">${imgs.map((u,i)=>`<img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy">`).join("")}</div>${imgs.length>1?`<span class="gn" id="gn">1/${imgs.length}</span><button class="ga l" id="gp" aria-label="Foto sebelumnya">‹</button><button class="ga r" id="gx" aria-label="Foto berikutnya">›</button>`:""}</div>`:`<div class="dc" style="${bg(x.c)}">${x.e}</div>`}<span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
  ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:26px">${rp(x.p)}</b></p>`:""}
  ${x.p&&k!=="t"&&!x.sold?`<div class="promo"><input class="fi" id="pcode" placeholder="Punya kode diskon?" aria-label="Kode diskon" autocomplete="off"><button class="ob" id="pap" type="button">Pakai</button></div><p class="msg" id="pmsg" role="status"></p>`:""}
- ${x.sold?`<span class="bt al" id="buy" aria-disabled="true" style="opacity:.6;cursor:not-allowed">Sudah terjual</span>`:`<a class="bt" id="buy" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a>`}<button class="bt al" id="cl">Tutup</button>`;
+ ${x.proofs&&x.proofs.length?`<div><b>Bukti transaksi</b><p class="note">Tap foto untuk memperbesar.</p><div class="pvs">${x.proofs.map((u,i)=>`<a class="th" href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Bukti ${i+1}" loading="lazy"></a>`).join("")}</div></div>`:""}<span class="bt al" id="buy" aria-disabled="true" style="opacity:.6;cursor:not-allowed">Sudah terjual</span><button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();
  const pa=$("pap");
  if(pa)pa.onclick=async()=>{const c=$("pcode").value.trim().toUpperCase(),m=$("pmsg");
@@ -561,7 +561,9 @@ async function loadProducts(){if(!LIVE)return;
   let im=d.images;if(typeof im==="string"){try{im=JSON.parse(im)}catch(e){im=[]}}
   im=Array.isArray(im)?im.filter(Boolean):[];
   if(!im.length&&d.image_url)im=[d.image_url];
-  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold,cat:k};
+  let pfi=d.proof_images;if(typeof pfi==="string"){try{pfi=JSON.parse(pfi)}catch(e){pfi=[]}}
+  pfi=Array.isArray(pfi)?pfi.filter(Boolean):[];
+  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold,cat:k,proofs:pfi};
   (x.sold?SD:({p:P,f:F,r:R,n:N,t:PT})[k]).push(x)});
  buildCat();fill();route()}
 // ambil laporan dari Supabase (foto bukti sengaja tidak diambil, hanya admin yang melihat)
