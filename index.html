@@ -12,7 +12,7 @@
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#EEF1F7;--card:#fff;--card2:#E7ECF6;--ink:#101A33;--mute:#56627F;--line:#CBD4E5;--acc:#8A5A00;--ok:#0B7A47;--red:#C42B42;--amber:#9A5B00}}
 :root[data-theme="light"]{--bg:#EEF1F7;--card:#fff;--card2:#E7ECF6;--ink:#101A33;--mute:#56627F;--line:#CBD4E5;--acc:#8A5A00;--ok:#0B7A47;--red:#C42B42;--amber:#9A5B00}
-:root[data-theme="dark"]{--bg:#0B1220;--card:#121B30;--card2:#19243F;--ink:#EEF2FA;--mute:#9AA7C2;--line:#27355A;--acc:#F2B33D;--ok:#3BD79C;--red:#F0566A;--amber:#9A5B00}
+:root[data-theme="dark"]{--bg:#0B1220;--card:#121B30;--card2:#19243F;--ink:#EEF2FA;--mute:#9AA7C2;--line:#27355A;--acc:#F2B33D;--ok:#3BD79C;--red:#F0566A;--amber:#F59E0B}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:150px;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.55 "Plus Jakarta Sans",system-ui,sans-serif;padding-bottom:100px}
@@ -258,10 +258,6 @@ textarea.fi{min-height:90px;resize:vertical}
 <dialog id="dlg"><div class="db" id="db"></div></dialog>
 
 <script>
-/* =====================================================
-   SUPABASE (isi 2 baris ini; jangan pernah isi kunci service_role / secret)
-   Selama belum diisi, situs jalan di MODE DEMO (data hilang saat refresh)
-   ===================================================== */
 const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";
 const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";
 const WA="https://wa.me/6285151949632";
@@ -282,10 +278,6 @@ const slides=[
  {h:"Nokos siap pakai untuk verifikasi",p:"Nomor kosong, proses lewat admin Satria Store.",c:["#0F3D4A","#146B75"]},
  {h:"Jasa amankan akun mulai Rp30rb",p:"Takut akun hilang? Amankan dulu di sini.",c:["#2B2A63","#4743B8"]},
  {h:"Rental akun mulai Rp50rb",p:"Coba akun sultan tanpa beli, sewa per jam.",c:["#4A1E2B","#8A2C3F"]}];
-/* =====================================================
-   KODE DISKON — memakai tabel `vouchers` yang sama dengan admin.html.
-   Voucher publik dan validasi checkout harus bersumber dari database yang sama.
-   ===================================================== */
 const PROMO=[];
 function drawPromo(message=""){
  const row=$("rPromo");
@@ -325,15 +317,9 @@ async function loadPromos(){
   drawPromo("Voucher belum dapat dimuat. Pastikan tabel vouchers dan izin SELECT publik di Supabase sudah benar.");
  }
 }
-/* =====================================================
-   TOP UP GAME (Free Fire, Mobile Legends, Roblox)
-   Format item: [jumlah, harga]. Harga 0 = tampil "Tanya harga".
-   Ubah angka harga di bawah sesuai harga tokomu, contoh: [50,7000]
-   Mau tambah/kurangi nominal? Tambah atau hapus baris [jumlah,harga].
-   ===================================================== */
-const mkN=(a,u,s)=>a.map(n=>[n,0,"",u,s]);          /* nominal biasa: [jumlah,harga,"",satuan,bagian] */
-const mkL=(a,s)=>a.map((n,i)=>[i+1,0,n,"",s]);        /* paket bernama: [urutan,harga,nama,"",bagian] */
-const SECO=["Diamond","Memberships","Cards & Passes"];  /* urutan bagian di popup */
+const mkN=(a,u,s)=>a.map(n=>[n,0,"",u,s]);
+const mkL=(a,s)=>a.map((n,i)=>[i+1,0,n,"",s]);
+const SECO=["Diamond","Memberships","Cards & Passes"];
 const TU=[
  {g:"Free Fire",img:"ff.jpg",e:"💎",c:["#4A1E2B","#8A2C3F"],need:"ID Free Fire kamu",
   items:[...mkN([5,12,50,70,140,355,720,1450,2180],"Diamond","Diamond"),
@@ -349,8 +335,6 @@ function tuCard(i){const x=TU[i];
 function drawTU(){const h=TU.length?TU.map((_,i)=>tuCard(i)).join(""):`<p class="sub" style="grid-column:1/-1">Top up segera hadir.</p>`;
  $("sTopup").hidden=!TU.length;
  ["rTopup","lt"].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML=h;el.querySelectorAll("[data-tu]").forEach(b=>b.onclick=()=>openTU(+b.dataset.tu))})}
-/* Saat Supabase aktif, daftar top up diambil dari tabel "topups" (diatur lewat tab Top Up di admin.html).
-   Kalau tabel belum dibuat / gagal dimuat, daftar bawaan di atas tetap dipakai. */
 const TUM={};TU.forEach(x=>TUM[x.g.toLowerCase()]=x);
 async function loadTopups(){if(!LIVE)return;
  const {data,error}=await sb.from("topups").select("game,unit,amount,price,label,section").eq("active",true).order("sort").order("amount");
@@ -370,7 +354,6 @@ function openTU(i){const x=TU[i],secs=[];
  ${secs.map(z=>(secs.length>1?`<h3 style="font-size:16px;margin:10px 0 0;color:var(--acc)">${esc(z.n)}</h3>`:"")+`<div class="opts">${z.l.map(opt).join("")}</div>`).join("")}
  <button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();$("dlg").showModal()}
-/* Data contoh untuk MODE DEMO. Saat Supabase aktif, semua ini dikosongkan dan diganti data dari admin. */
 const P=[
  {g:"Arena Legenda",t:"STOK AKUN JURAGAN 31",s:"Seller Satu",o:2700000,p:2500000,d:7,e:"👑",c:["#16306B","#1F4BA3"]},
  {g:"Arena Legenda",t:"STOK AKUN PRIBADI ALL SKIN",s:"Seller Satu",o:2500000,p:2200000,d:12,e:"🗡️",c:["#2B2A63","#4743B8"]},
@@ -382,7 +365,6 @@ const N=[
  {g:"Nokos",t:"NOKOS WHATSAPP INDONESIA",s:"Admin Satria",p:3500,e:"📲",c:["#0F3D4A","#146B75"]},
  {g:"Nokos",t:"NOKOS TELEGRAM INDONESIA",s:"Admin Satria",p:2500,e:"✈️",c:["#16306B","#1F4BA3"]}];
 const R=[{t:"RENTAL TR 001",s:"Admin Satria",p:65000,e:"🎮",c:["#2B2A63","#4743B8"]},{t:"RENTAL TR 004",s:"Admin Satria",p:50000,e:"🕹️",c:["#4A1E2B","#8A2C3F"]}];
-/* Partner: sengaja kosong. Tambah dari admin (kategori Partner); section otomatis muncul kalau ada isinya. */
 const PT=[],SD=[];
 if(LIVE){P.length=F.length=N.length=R.length=PT.length=SD.length=0}
 const LAB={r:"Rental",t:"Partner resmi",n:"Nokos"};
@@ -408,7 +390,7 @@ function show({x,k}){
  $("db").innerHTML=`${imgs.length?`<div class="gal"><div class="gs" id="gs">${imgs.map((u,i)=>`<img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy">`).join("")}</div>${imgs.length>1?`<span class="gn" id="gn">1/${imgs.length}</span><button class="ga l" id="gp" aria-label="Foto sebelumnya">‹</button><button class="ga r" id="gx" aria-label="Foto berikutnya">›</button>`:""}</div>`:`<div class="dc" style="${bg(x.c)}">${x.e}</div>`}<span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
  ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:26px">${rp(x.p)}</b></p>`:""}
  ${x.p&&k!=="t"&&!x.sold?`<div class="promo"><input class="fi" id="pcode" placeholder="Punya kode diskon?" aria-label="Kode diskon" autocomplete="off"><button class="ob" id="pap" type="button">Pakai</button></div><p class="msg" id="pmsg" role="status"></p>`:""}
- ${x.proofs&&x.proofs.length?`<div><b>Bukti transaksi</b><p class="note">Tap foto untuk memperbesar.</p><div class="pvs">${x.proofs.map((u,i)=>`<a class="th" href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Bukti ${i+1}" loading="lazy"></a>`).join("")}</div></div>`:""}<span class="bt al" id="buy" aria-disabled="true" style="opacity:.6;cursor:not-allowed">Sudah terjual</span><button class="bt al" id="cl">Tutup</button>`;
+ ${x.proofs&&x.proofs.length?`<div><b>Bukti transaksi</b><p class="note">Tap foto untuk memperbesar.</p><div class="pvs">${x.proofs.map((u,i)=>`<a class="th" href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Bukti ${i+1}" loading="lazy"></a>`).join("")}</div></div>`:""}${x.plink?`<a class="bt" target="_blank" rel="noopener noreferrer" href="${esc(x.plink)}">🔗 Cek bukti resmi</a><p class="note">Link ini menuju postingan atau testimoni asli untuk verifikasi transaksi.</p>`:""}<span class="bt al" id="buy" aria-disabled="true" style="opacity:.6;cursor:not-allowed">Sudah terjual</span><button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();
  const pa=$("pap");
  if(pa)pa.onclick=async()=>{const c=$("pcode").value.trim().toUpperCase(),m=$("pmsg");
@@ -417,7 +399,6 @@ function show({x,k}){
   if(LIVE){
    pa.disabled=true;m.textContent="Memeriksa kode…";
    try{
-    // Kode disimpan dalam huruf besar oleh admin. Escape wildcard agar pencarian literal.
     const {data,error}=await PQ().ilike("code",c).maybeSingle();
     if(error){console.error("Validasi voucher gagal:",error);m.textContent="Voucher belum bisa diperiksa. Coba lagi atau hubungi admin.";return}
     pm=data?normP(data):null;
@@ -444,7 +425,6 @@ function show({x,k}){
  $("dlg").showModal()}
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
 fill();drawTU();drawPromo();$("q").oninput=()=>{fill();if(location.hash==="#/produk")drawProduk();else location.hash="#/produk"};
-// banner (bisa digeser dengan jari atau mouse)
 let n=0,tm;const sl=$("sl");
 const go=i=>{n=(i+slides.length)%slides.length;sl.style.transform=`translateX(-${n*100}%)`;[...$("dots").children].forEach((d,j)=>d.className=j===n?"on":"")};
 const auto=()=>{clearInterval(tm);if(!matchMedia("(prefers-reduced-motion:reduce)").matches)tm=setInterval(()=>go(n+1),4500)};
@@ -456,14 +436,12 @@ const endDrag=()=>{if(sx===null)return;sl.style.transition="";Math.abs(dx)>50?go
 addEventListener("pointerup",endDrag);addEventListener("pointercancel",endDrag);
 [...$("dots").children].forEach((d,j)=>d.onclick=()=>{go(j);auto()});
 $("tx").onclick=()=>$("tick").remove();
-// tema
 const th=$("th"),root=document.documentElement;
 const curTheme=()=>root.dataset.theme||(matchMedia("(prefers-color-scheme:light)").matches?"light":"dark");
 const setTheme=t=>{root.dataset.theme=t;th.textContent=t==="dark"?"🌙":"☀️"};
 try{const sv=localStorage.getItem("satria-theme");if(sv)root.dataset.theme=sv}catch(e){}
 th.textContent=curTheme()==="dark"?"🌙":"☀️";
 th.onclick=()=>{const t=curTheme()==="dark"?"light":"dark";setTheme(t);try{localStorage.setItem("satria-theme",t)}catch(e){}};
-// data contoh laporan (nomor di bawah ini sengaja nomor palsu)
 const REP=[
  {id:22,t:"Penipuan, akun tidak dikirim",wa:"6281200000001",gid:"123456789",at:"10/10/2026, 20.15.02",s:"ok"},
  {id:20,t:"Clone akun setelah transaksi",wa:"6281200000002",gid:"",at:"22/9/2026, 15.30.41",s:"ok"},
@@ -489,7 +467,6 @@ function repDetail(id){const r=REP.find(x=>x.id===id);
  if(LIVE&&r.s==="ok"&&(r.proofs||[]).length)sb.storage.from("bukti").createSignedUrls(r.proofs,3600).then(({data})=>{const g=$("rpf");if(!g)return;
   const l=(data||[]).filter(x=>x.signedUrl);
   g.innerHTML=l.length?l.map((x,i)=>`<a class="th" href="${x.signedUrl}" target="_blank" rel="noopener" aria-label="Buka foto bukti ${i+1}"><img src="${x.signedUrl}" alt="Foto bukti ${i+1}" loading="lazy"></a>`).join(""):`<p class="tm">Foto bukti belum bisa dimuat.</p>`})}
-// kecilkan foto bukti (maks 1280px, JPEG) supaya upload ringan
 async function shrink(file){
  const url=URL.createObjectURL(file);
  try{
@@ -549,8 +526,6 @@ $("rn").onclick=()=>{
   $("db").innerHTML=`<h3 style="font-size:21px">Laporan terkirim</h3><p class="sub">Laporan dan foto bukti kamu masuk antrean. Laporan dan foto tampil di daftar publik setelah disetujui admin.</p><button class="bt al" id="cl2">Tutup</button>`;$("cl2").onclick=()=>$("dlg").close();drawRep()};
  $("dlg").showModal()};
 $("rq").oninput=drawRep;$("rs").onclick=drawRep;$("rr").onclick=async()=>{await loadRep();drawRep()};
-// ambil produk dari Supabase (diisi lewat admin.html)
-// kategori di tabel products: p=stok akun, f=flash sale, r=rental, n=nokos, t=partner
 async function loadProducts(){if(!LIVE)return;
  const {data,error}=await sb.from("products").select("*").eq("active",true).order("id",{ascending:false});
  if(error||!data)return;
@@ -563,15 +538,13 @@ async function loadProducts(){if(!LIVE)return;
   if(!im.length&&d.image_url)im=[d.image_url];
   let pfi=d.proof_images;if(typeof pfi==="string"){try{pfi=JSON.parse(pfi)}catch(e){pfi=[]}}
   pfi=Array.isArray(pfi)?pfi.filter(Boolean):[];
-  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold,cat:k,proofs:pfi};
+  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold,cat:k,proofs:pfi,plink:/^https?:\/\//i.test(d.proof_link||"")?d.proof_link:""};
   (x.sold?SD:({p:P,f:F,r:R,n:N,t:PT})[k]).push(x)});
  buildCat();fill();route()}
-// ambil laporan dari Supabase (foto bukti sengaja tidak diambil, hanya admin yang melihat)
 async function loadRep(){if(!LIVE)return;
  const {data,error}=await sb.from("reports").select("id,title,wa,game_id,story,created_at,status,proof_paths").order("id",{ascending:false});
  if(error)return;REP.length=0;
  data.forEach(d=>REP.push({id:d.id,t:d.title,wa:d.wa,gid:d.game_id||"",k:d.story||"",at:new Date(d.created_at).toLocaleString("id-ID"),s:d.status,proofs:d.proof_paths||[]}))}
-// halaman produk
 const CAT=[];function buildCat(){CAT.length=0;CAT.push(...P.map(x=>[x,"p"]),...F.map(x=>[x,"f"]),...N.map(x=>[x,"n"]),...R.map(x=>[x,"r"]))}buildCat();
 const KL={"Semua":"","Stok akun":"p","Flash sale":"f","Nokos":"n","Rental":"r"},PS={k:"Semua",g:"Semua",s:"def"};
 document.querySelectorAll("[data-f]").forEach(a=>a.addEventListener("click",()=>{PS.k=a.dataset.f;PS.g="Semua"}));
@@ -585,7 +558,6 @@ function drawProduk(){
  if(PS.s!=="def")l.sort((a,b)=>PS.s==="low"?a[0].p-b[0].p:b[0].p-a[0].p);
  $("pg").innerHTML=l.length?l.map(([x,k])=>card(x,k)).join(""):`<p class="sub" style="grid-column:1/-1">Tidak ada produk yang cocok. Coba ganti kata kunci atau filter.</p>`;
  $("pg").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
-// halaman layanan
 const SV=[
  {e:"⚡",t:"Top Up All Game",d:"Diamond Free Fire, diamond Mobile Legends, Robux Roblox, dan game lain. Proses cepat setelah bayar.",c:["#16306B","#1F4BA3"],h:"#/layanan",b:"Pilih game"},
  {e:"📲",t:"Nokos (Nomor Kosong)",d:"Nomor virtual untuk verifikasi akun. Lihat stok terbaru di halaman Produk.",c:["#0F3D4A","#146B75"],h:"#/produk",f:"Nokos",b:"Lihat stok"},
@@ -600,7 +572,6 @@ function drawLayanan(){
 function drawSold(){
  $("sg").innerHTML=SD.length?SD.map(x=>card(x,x.cat)).join(""):`<p class="sub" style="grid-column:1/-1">Belum ada akun terjual.</p>`;
  $("sg").querySelectorAll(".c[data-i]").forEach(b=>b.onclick=()=>openItem(b))}
-// router sederhana (hash) agar jalan di GitHub Pages
 const views={home:$("v-home"),produk:$("v-produk"),laporan:$("v-laporan"),layanan:$("v-layanan"),sold:$("v-sold")};
 function route(){const h=location.hash;
  let r=h.startsWith("#/sold")?"sold":h.startsWith("#/layanan")?"layanan":h.startsWith("#/produk")?"produk":h.startsWith("#/laporan")?"laporan":"home";
