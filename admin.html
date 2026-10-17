@@ -127,7 +127,7 @@ const rp=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
 const fmt=s=>String(s||"").split(",").filter(Boolean).map(esc).join(", ");
 const CATN={p:"Stok Akun",f:"Flash Sale",n:"Nokos",r:"Rental",t:"Partner"};
 const CATE={p:"🛍️",f:"⚡",n:"📱",r:"💼",t:"🤝"};
-const MAXI=7;
+const MAXI=7,MAXP=5;let proofs=[];
 let tab="produk",pf="all",pq="",rf="wait",vf="all",PR=[],RE=[],TP=[],VC=[],tpErr="",vcErr="",imgs=[];
 const imgsOf=p=>Array.isArray(p.images)&&p.images.length?p.images:(p.image_url?[p.image_url]:[]);
 const ready=!SUPABASE_URL.includes("ISI_")&&!!window.supabase;
@@ -209,7 +209,7 @@ function prodView(){
    if(!confirm("Hapus produk ini?"))return;
    const {error}=await sb.from("products").delete().eq("id",b.dataset.d);
    if(error)return toast("Gagal hapus: "+error.message,1);
-   const paths=imgsOf(p).map(u=>u.split("/produk/")[1]).filter(Boolean);
+   const paths=[...imgsOf(p),...(p.proof_images||[])].map(u=>u.split("/produk/")[1]).filter(Boolean);
    if(paths.length)sb.storage.from("produk").remove(paths).catch(()=>{});
    await load();panel();toast("Produk dihapus")})};
  $("q").oninput=()=>{pq=$("q").value;draw()};
@@ -226,8 +226,14 @@ function drawImgs(){const g=$("ig");if(!g)return;
  g.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{const m=imgs[+b.dataset.r];if(!m.old)URL.revokeObjectURL(m.u);imgs.splice(+b.dataset.r,1);drawImgs()});
  g.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const [m]=imgs.splice(+b.dataset.c,1);imgs.unshift(m);drawImgs()})}
 
+function drawProofs(){const g=$("pfg");if(!g)return;
+ g.innerHTML=proofs.map((m,i)=>`<div class="ph"><img src="${esc(m.u)}" alt="Bukti ${i+1}"><button type="button" class="rm" data-pr="${i}" aria-label="Hapus bukti ${i+1}">✕</button></div>`).join("");
+ $("pfc").textContent=proofs.length+"/"+MAXP+" foto";
+ g.querySelectorAll("[data-pr]").forEach(b=>b.onclick=()=>{const m=proofs[+b.dataset.pr];if(!m.old)URL.revokeObjectURL(m.u);proofs.splice(+b.dataset.pr,1);drawProofs()})}
+
 function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
  imgs=imgsOf(p).map(u=>({u,old:true}));
+ proofs=(Array.isArray(p.proof_images)?p.proof_images:[]).map(u=>({u,old:true}));
  const LG={n:"Jenis nokos (mis. WhatsApp, Telegram)",t:"Keterangan partner (opsional)"};
  $("db").innerHTML=`<h3>${p.id?"Edit":"Tambah"} produk</h3>
  <label class="fl" for="f_c">Kategori</label><select class="fi" id="f_c">${Object.entries(CATN).map(([k,n])=>`<option value="${k}"${p.category===k?" selected":""}>${n}</option>`).join("")}</select>
@@ -242,10 +248,15 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
  <div class="ig" id="ig"></div>
  <label class="ck"><input type="checkbox" id="f_a"${p.active?" checked":""}> Tampilkan di toko</label>
  <label class="ck"><input type="checkbox" id="f_sold"${p.sold?" checked":""}> Tandai SOLD (tidak bisa dibeli)</label>
+ <label class="fl" for="f_pf">Bukti terjual: chat atau bukti bayar (maksimal ${MAXP})</label>
+ <input class="fi" id="f_pf" type="file" accept="image/*" multiple>
+ <p class="mu sm" style="margin:6px 0 0">Tampil di halaman Akun terjual. Tutup nama, nomor HP, rekening, dan data pribadi sebelum diunggah. <b id="pfc">0/${MAXP} foto</b></p>
+ <div class="ig" id="pfg"></div>
  <p class="msg" id="fm" role="status"></p><button class="pb" id="sv">Simpan</button><button class="ob" id="cx">Batal</button>`;
  const lab=()=>{$("lg").textContent=LG[$("f_c").value]||"Game";$("f_p").placeholder=$("f_c").value==="t"?"Boleh kosong":""};lab();$("f_c").onchange=lab;
  drawImgs();
- const close=()=>{imgs.forEach(m=>{if(!m.old)URL.revokeObjectURL(m.u)});imgs=[];$("dlg").close()};
+ drawProofs();
+ const close=()=>{imgs.concat(proofs).forEach(m=>{if(!m.old)URL.revokeObjectURL(m.u)});imgs=[];proofs=[];$("dlg").close()};
  $("cx").onclick=close;
  $("f_i").onchange=()=>{const fm=$("fm");fm.textContent="";
   for(const f of $("f_i").files){
@@ -253,6 +264,12 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
    if(!f.type.startsWith("image/")){fm.textContent="Hanya file gambar yang bisa diunggah.";continue}
    imgs.push({f,u:URL.createObjectURL(f)})}
   $("f_i").value="";drawImgs()};
+ $("f_pf").onchange=()=>{const fm=$("fm");fm.textContent="";
+  for(const f of $("f_pf").files){
+   if(proofs.length>=MAXP){fm.textContent="Maksimal "+MAXP+" foto bukti.";break}
+   if(!f.type.startsWith("image/")){fm.textContent="Hanya file gambar yang bisa diunggah.";continue}
+   proofs.push({f,u:URL.createObjectURL(f)})}
+  $("f_pf").value="";drawProofs()};
  $("sv").onclick=async()=>{const fm=$("fm"),t=$("f_t").value.trim(),cat=$("f_c").value;
   const pr=$("f_p").value===""&&cat==="t"?0:parseInt($("f_p").value,10);
   if(!t||isNaN(pr)||pr<0)return fm.textContent="Judul dan harga wajib diisi.";
@@ -265,9 +282,16 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
     const blob=await shrink(m.f),path=`p-${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
     const up=await sb.storage.from("produk").upload(path,blob,{contentType:"image/jpeg"});if(up.error)throw up.error;
     urls.push(sb.storage.from("produk").getPublicUrl(path).data.publicUrl)}
+   const purls=[];
+   for(let i=0;i<proofs.length;i++){const m=proofs[i];
+    if(m.old){purls.push(m.u);continue}
+    fm.textContent="Mengunggah bukti "+(i+1)+"/"+proofs.length+"…";
+    const blob=await shrink(m.f),path=`b-${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+    const up=await sb.storage.from("produk").upload(path,blob,{contentType:"image/jpeg"});if(up.error)throw up.error;
+    purls.push(sb.storage.from("produk").getPublicUrl(path).data.publicUrl)}
    fm.textContent="Menyimpan…";
    const row={title:t,game:$("f_g").value.trim()||null,category:cat,seller:$("f_s").value.trim()||null,price:pr,
-    old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,images:urls,image_url:urls[0]||null,active:$("f_a").checked,sold:$("f_sold").checked};
+    old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,images:urls,image_url:urls[0]||null,active:$("f_a").checked,sold:$("f_sold").checked,proof_images:purls};
    const r=p.id?await sb.from("products").update(row).eq("id",p.id):await sb.from("products").insert(row);if(r.error)throw r.error;
    close();await load();panel();toast("Produk tersimpan")
   }catch(e){fm.textContent="Gagal: "+e.message;$("sv").disabled=false}};
