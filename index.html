@@ -159,6 +159,11 @@ textarea.fi{min-height:90px;resize:vertical}
 .pc button{border:0;background:var(--fill);color:var(--onf);font-weight:800;border-radius:10px;padding:8px}
 .promo{display:flex;gap:8px;margin-top:6px}
 .promo .fi{text-transform:uppercase}
+.c.sold .cv>img{filter:grayscale(1) brightness(.45)}
+.c.sold .off{display:none}
+.c.sold .p{color:var(--mute)}
+.sd{position:absolute;inset:0;display:grid;place-items:center}
+.sd span{background:#E5384Acc;color:#fff;border:3px solid #E5384A;font:700 18px var(--d);letter-spacing:.06em;padding:2px 14px;border-radius:6px;transform:rotate(-10deg)}
 @media (min-width:760px){
  body{font-size:16px}
  .menu{grid-template-columns:1fr 1fr}
@@ -378,9 +383,9 @@ if(LIVE){P.length=F.length=N.length=R.length=PROMO.length=0}
 const LAB={r:"Rental",t:"Partner resmi",n:"Nokos"};
 const all=[];
 function card(x,k){let i=all.indexOf(x);if(i<0)i=all.push(x)-1;x.k=k;
- return `<button class="c" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}</div>
+ return `<button class="c${x.sold?" sold":""}" data-i="${i}"><div class="cv" style="${bg(x.c)}" aria-hidden="true">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:x.e}${x.d?`<span class="off">Diskon ${x.d}%</span>`:""}${x.sold?`<span class="sd"><span>SOLD</span></span>`:""}</div>
  <div class="ci"><span class="g">${LAB[k]||x.g||""}</span><span class="t">${x.t}</span><span class="sv">${x.s}</span>
- ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
+ ${x.o?`<span class="o">${rp(x.o)}</span>`:""}<span class="p ${k==="t"?"pk":""}">${x.sold?"Terjual":k==="t"?"Hubungi":rp(x.p)}</span></div></button>`}
 $("sl").innerHTML=slides.map(s=>s.img?`<div class="s sb"><img src="${esc(s.img)}" alt="${esc(s.alt||"")}" draggable="false"></div>`:`<div class="s" style="${bg(s.c)}"><h2>${s.h}</h2><p>${s.p}</p></div>`).join("");
 $("dots").innerHTML=slides.map(()=>"<i></i>").join("");
 $("info").innerHTML=slides.filter(s=>!s.img).slice(0,3).map(s=>`<div class="c" style="width:240px;min-height:150px;${bg(s.c)};padding:16px;justify-content:center;color:#fff"><b style="font-size:17px;font-family:var(--d)">${s.h}</b><span style="font-size:13px;margin-top:6px">${s.p}</span></div>`).join("");
@@ -397,8 +402,8 @@ function show({x,k}){
  const imgs=x.imgs&&x.imgs.length?x.imgs:(x.img?[x.img]:[]);
  $("db").innerHTML=`${imgs.length?`<div class="gal"><div class="gs" id="gs">${imgs.map((u,i)=>`<img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy">`).join("")}</div>${imgs.length>1?`<span class="gn" id="gn">1/${imgs.length}</span><button class="ga l" id="gp" aria-label="Foto sebelumnya">‹</button><button class="ga r" id="gx" aria-label="Foto berikutnya">›</button>`:""}</div>`:`<div class="dc" style="${bg(x.c)}">${x.e}</div>`}<span class="g">${LAB[k]||x.g||""}</span><h3 style="font-size:21px">${x.t}</h3><p style="color:var(--mute)">Penjual: ${x.s}</p>${x.desc?`<p>${x.desc}</p>`:""}
  ${x.p?`<p>${x.o?`<s style="color:var(--red)">${rp(x.o)}</s> `:""}<b class="p" style="font-size:26px">${rp(x.p)}</b></p>`:""}
- ${x.p&&k!=="t"?`<div class="promo"><input class="fi" id="pcode" placeholder="Punya kode diskon?" aria-label="Kode diskon" autocomplete="off"><button class="ob" id="pap" type="button">Pakai</button></div><p class="msg" id="pmsg" role="status"></p>`:""}
- <a class="bt" id="buy" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a><button class="bt al" id="cl">Tutup</button>`;
+ ${x.p&&k!=="t"&&!x.sold?`<div class="promo"><input class="fi" id="pcode" placeholder="Punya kode diskon?" aria-label="Kode diskon" autocomplete="off"><button class="ob" id="pap" type="button">Pakai</button></div><p class="msg" id="pmsg" role="status"></p>`:""}
+ ${x.sold?`<span class="bt al" id="buy" aria-disabled="true" style="opacity:.6;cursor:not-allowed">Sudah terjual</span>`:`<a class="bt" id="buy" target="_blank" rel="noopener" href="${WA}?text=${msg}">${k==="t"?"Hubungi lewat WhatsApp":"Beli lewat WhatsApp"}</a>`}<button class="bt al" id="cl">Tutup</button>`;
  $("cl").onclick=()=>$("dlg").close();
  const pa=$("pap");
  if(pa)pa.onclick=async()=>{const c=$("pcode").value.trim().toUpperCase(),m=$("pmsg");
@@ -547,11 +552,11 @@ async function loadProducts(){if(!LIVE)return;
  const pal=[["#16306B","#1F4BA3"],["#0F3D4A","#146B75"],["#4A1E2B","#8A2C3F"],["#2B2A63","#4743B8"],["#3D2A0C","#7A5214"]];
  const em={p:"🎮",f:"🔥",r:"🕹️",n:"📲",t:"🤝"};
  P.length=F.length=N.length=R.length=PT.length=0;
- data.forEach(d=>{const k=["f","r","n","t"].includes(d.category)?d.category:"p";
+ data.sort((a,b)=>(a.sold?1:0)-(b.sold?1:0)).forEach(d=>{const k=["f","r","n","t"].includes(d.category)?d.category:"p";
   let im=d.images;if(typeof im==="string"){try{im=JSON.parse(im)}catch(e){im=[]}}
   im=Array.isArray(im)?im.filter(Boolean):[];
   if(!im.length&&d.image_url)im=[d.image_url];
-  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||"")};
+  const x={id:d.id,g:esc(d.game||""),t:esc(d.title),s:esc(d.seller||"Admin"),p:d.price,o:d.old_price||0,d:d.old_price?Math.round(100-d.price/d.old_price*100):0,e:em[k],c:pal[d.id%pal.length],img:im[0]||"",imgs:im,desc:esc(d.description||""),sold:!!d.sold};
   ({p:P,f:F,r:R,n:N,t:PT})[k].push(x)});
  buildCat();fill();route()}
 // ambil laporan dari Supabase (foto bukti sengaja tidak diambil, hanya admin yang melihat)
