@@ -117,7 +117,6 @@ dialog::backdrop{background:#030618c0}
 <dialog id="dlg"><div class="db" id="db"></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
-/* Samakan dengan index.html. Jangan pernah isi kunci service_role / secret. */
 const SUPABASE_URL="https://ntzbitqbmfrvyqyyeccr.supabase.co";
 const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJpdHFibWZydnlxeXllY2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTM1ODAsImV4cCI6MjEwNzI4OTU4MH0.3kNZTecU4Si9WNjS7vrOGSZcGWnQRs104mcz93Q6Amk";
 
@@ -161,7 +160,6 @@ async function load(){
  PR=a.data||[];RE=b.data||[];TP=c.data||[];VC=d.data||[];
  tpErr=c.error?c.error.message:"";vcErr=d.error?d.error.message:""}
 
-/* status voucher: [label, kelas tag] */
 const vst=v=>{
  if(!v.active)return["Nonaktif","off"];
  if(v.expires_at&&new Date(v.expires_at)<new Date())return["Kedaluwarsa","red"];
@@ -183,7 +181,6 @@ function panel(){
  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;panel();window.scrollTo({top:0})});
  tab==="produk"?prodView():tab==="topup"?tuView():tab==="voucher"?vcView():repView()}
 
-/* ===== TAB PRODUK ===== */
 function prodView(){
  const cats=[["all","Semua",PR.length],...Object.entries(CATN).map(([k,n])=>[k,n,PR.filter(p=>p.category===k).length])];
  $("body").innerHTML=`<button class="pb wide" id="add">+ Tambah produk</button>
@@ -252,6 +249,9 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
  <input class="fi" id="f_pf" type="file" accept="image/*" multiple>
  <p class="mu sm" style="margin:6px 0 0">Tampil di halaman Akun terjual. Tutup nama, nomor HP, rekening, dan data pribadi sebelum diunggah. <b id="pfc">0/${MAXP} foto</b></p>
  <div class="ig" id="pfg"></div>
+ <label class="fl" for="f_pl">Link bukti resmi (opsional)</label>
+ <input class="fi" id="f_pl" type="url" inputmode="url" maxlength="300" placeholder="https://..." value="${v("proof_link")}">
+ <p class="mu sm" style="margin:6px 0 0">Contoh: link postingan TikTok, saluran WhatsApp, atau testimoni yang menunjukkan transaksi ini.</p>
  <p class="msg" id="fm" role="status"></p><button class="pb" id="sv">Simpan</button><button class="ob" id="cx">Batal</button>`;
  const lab=()=>{$("lg").textContent=LG[$("f_c").value]||"Game";$("f_p").placeholder=$("f_c").value==="t"?"Boleh kosong":""};lab();$("f_c").onchange=lab;
  drawImgs();
@@ -273,6 +273,8 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
  $("sv").onclick=async()=>{const fm=$("fm"),t=$("f_t").value.trim(),cat=$("f_c").value;
   const pr=$("f_p").value===""&&cat==="t"?0:parseInt($("f_p").value,10);
   if(!t||isNaN(pr)||pr<0)return fm.textContent="Judul dan harga wajib diisi.";
+  let plink=$("f_pl").value.trim();
+  if(plink&&!/^https?:\/\//i.test(plink))return fm.textContent="Link harus diawali http:// atau https://";
   $("sv").disabled=true;
   try{
    const urls=[];
@@ -291,13 +293,12 @@ function form(p){p=p||{category:"p",active:true};const v=k=>esc(p[k]??"");
     purls.push(sb.storage.from("produk").getPublicUrl(path).data.publicUrl)}
    fm.textContent="Menyimpan…";
    const row={title:t,game:$("f_g").value.trim()||null,category:cat,seller:$("f_s").value.trim()||null,price:pr,
-    old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,images:urls,image_url:urls[0]||null,active:$("f_a").checked,sold:$("f_sold").checked,proof_images:purls};
+    old_price:parseInt($("f_o").value,10)||null,description:$("f_d").value.trim()||null,images:urls,image_url:urls[0]||null,active:$("f_a").checked,sold:$("f_sold").checked,proof_images:purls,proof_link:plink||null};
    const r=p.id?await sb.from("products").update(row).eq("id",p.id):await sb.from("products").insert(row);if(r.error)throw r.error;
    close();await load();panel();toast("Produk tersimpan")
   }catch(e){fm.textContent="Gagal: "+e.message;$("sv").disabled=false}};
  $("dlg").showModal()}
 
-/* ===== TAB TOP UP: nominal dan harga top up (tabel "topups") ===== */
 function tuView(){
  const tm=(t,ok)=>{const m=$("tm");if(m){m.textContent=t;m.style.color=ok?"var(--ok)":"var(--red)"}if(t)toast(t,!ok)};
  const games=[...new Set(TP.map(r=>r.game))],secs=[...new Set(TP.map(r=>r.section).filter(Boolean))];
@@ -364,7 +365,6 @@ function tuView(){
   if(!data||!data.length)return toast("Tidak terhapus. Pastikan akun ini terdaftar di tabel admins.",1);
   await refresh();toast("Game dihapus")})}
 
-/* ===== TAB VOUCHER (tabel "vouchers") ===== */
 function vcView(){
  if(vcErr){$("body").innerHTML=`<section class="pn" style="margin-top:14px"><h3>Tabel voucher belum siap</h3><p class="mu">Jalankan file vouchers.sql di Supabase (SQL Editor) dulu, lalu muat ulang halaman ini.</p><p class="mu sm">Detail: ${esc(vcErr)}</p></section>`;return}
  const cnt=k=>k==="all"?VC.length:VC.filter(v=>k==="on"?vOn(v):!vOn(v)).length;
@@ -441,7 +441,6 @@ function vform(p){p=p||{kind:"pct",active:true,min_order:0};const v=k=>esc(p[k]?
   $("dlg").close();await load();panel();toast(p.id?"Voucher diperbarui":"Voucher dibuat")};
  $("dlg").showModal()}
 
-/* ===== TAB LAPORAN ===== */
 async function repView(){
  const cnt=k=>k==="all"?RE.length:RE.filter(r=>r.status===k).length;
  const list=RE.filter(r=>rf==="all"||r.status===rf);
